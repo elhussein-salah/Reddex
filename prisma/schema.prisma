@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  DOCTOR
+  PATIENT
+  ADMIN
+}
+
+model users {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  photourl  String?
+  name      String
+  role      Role
+  isActive  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  patients  patients?
+  doctors   doctors?
+}
+
+model patients {
+  id           Int         @id @default(autoincrement())
+  birthdate    DateTime
+  SSN          String      @unique
+  healthStatus String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  userId       Int         @unique
+  user         users       @relation(fields: [userId], references: [id])
+  labReports   LabReport[]
+}
+
+model LabReport {
+  id         Int     @id @default(autoincrement())
+  patient_id Int
+  photo      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patient patients    @relation(fields: [patient_id], references: [id])
+  results LabResult[]
+}
+
+model LabResult {
+  id        Int @id @default(autoincrement())
+  report_id Int
+
+  name  String // Hb, RBC, etc
+  value Float
+  unit  String? // g/dL, %, etc
+
+  report LabReport @relation(fields: [report_id], references: [id])
+}
+
+model doctors {
+  id             Int      @id @default(autoincrement())
+  specialty      String
+  bio            String
+  phone          String   @unique
+  SSN            String   @unique
+  licenseMedical String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  userId         Int      @unique
+  user           users    @relation(fields: [userId], references: [id])
+}
