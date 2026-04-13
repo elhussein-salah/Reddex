@@ -19,12 +19,20 @@ enum Role {
   ADMIN
 }
 
+enum FollowUpStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
 model users {
   id        Int       @id @default(autoincrement())
   email     String    @unique
   password  String
   photourl  String?
   name      String
+  phone     String    @unique
   role      Role
   isActive  Boolean   @default(false)
   createdAt DateTime  @default(now())
@@ -43,6 +51,7 @@ model patients {
   userId       Int         @unique
   user         users       @relation(fields: [userId], references: [id])
   labReports   LabReport[]
+  followUps    FollowUp[]
 }
 
 model LabReport {
@@ -69,14 +78,31 @@ model LabResult {
 }
 
 model doctors {
-  id             Int      @id @default(autoincrement())
+  id             Int        @id @default(autoincrement())
   specialty      String
   bio            String
-  phone          String   @unique
-  SSN            String   @unique
-  licenseMedical String   @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  userId         Int      @unique
-  user           users    @relation(fields: [userId], references: [id])
+  SSN            String     @unique
+  licenseMedical String     @unique
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  userId         Int        @unique
+  user           users      @relation(fields: [userId], references: [id])
+  followUps      FollowUp[]
+}
+
+model FollowUp {
+  id        Int    @id @default(autoincrement())
+  doctorId  Int
+  patientId Int
+  notes     String
+
+  status FollowUpStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctor  doctors  @relation(fields: [doctorId], references: [id])
+  patient patients @relation(fields: [patientId], references: [id])
+
+  @@index([doctorId, patientId])
 }

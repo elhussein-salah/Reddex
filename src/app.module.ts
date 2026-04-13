@@ -11,12 +11,14 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { PatientsModule } from './patients/patients.module';
 import { LabReportsModule } from './lab-reports/lab-reports.module';
+import { FollowUpModule } from './follow-up/follow-up.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     AuthModule,
+    FollowUpModule,
     UserModule,
     DoctorModule,
     CloudinaryModule,

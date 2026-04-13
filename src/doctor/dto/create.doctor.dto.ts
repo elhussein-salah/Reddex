@@ -20,14 +20,6 @@ export class CreateDoctorDto extends CreateUserDto {
   bio: string;
 
   @ApiProperty({
-    example: '+1-202-555-0198',
-    description: 'Doctor contact phone number',
-  })
-  @IsString()
-  @IsNotEmpty()
-  phone: string;
-
-  @ApiProperty({
     example: '123-45-6789',
     description: 'Doctor social security number',
   })

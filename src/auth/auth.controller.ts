@@ -5,7 +5,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { LoginDto } from './dto';
+import { LoginDto, ForgotPasswordDto, ResetPasswordDto } from './dto';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { CreatePatientDto } from 'src/patients/dto/create.patient.dto';
@@ -45,6 +45,7 @@ export class AuthController {
         email: { type: 'string', example: 'john@example.com' },
         password: { type: 'string', example: 'StrongPass123' },
         birthdate: { type: 'string', example: '1996-05-14T00:00:00.000Z' },
+        phone: { type: 'string', example: '+1-202-555-0198' },
         SSN: { type: 'string', example: '123-45-6789' },
         healthStatus: { type: 'string', example: 'Stable' },
         profilePicture: {
@@ -112,5 +113,25 @@ export class AuthController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.authService.doctorRegister(dto, file);
+  }
+
+  @Post('forgot-password')
+  @ApiBody({
+    type: ForgotPasswordDto,
+    description: 'Phone number for OTP',
+    required: true,
+  })
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(dto);
+  }
+
+  @Post('reset-password')
+  @ApiBody({
+    type: ResetPasswordDto,
+    description: 'OTP verification and new password',
+    required: true,
+  })
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto);
   }
 }

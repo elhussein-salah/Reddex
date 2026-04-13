@@ -56,6 +56,7 @@ export class UserService {
         data: {
           name: data.name,
           email: data.email,
+          phone: data.phone,
           password: hashedPassword,
           role: role,
           photourl: uploadedImage?.url ?? null,

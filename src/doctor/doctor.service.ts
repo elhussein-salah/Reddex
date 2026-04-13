@@ -61,13 +61,13 @@ export class DoctorService {
         data: {
           specialty: dto.specialty,
           bio: dto.bio,
-          phone: dto.phone,
           SSN: dto.SSN,
           licenseMedical: dto.licenseMedical,
           user: {
             create: {
               name: dto.name,
               email: dto.email,
+              phone: dto.phone,
               password: hashedPassword,
               photourl: uploadedImage?.url ?? null,
               role: Role.DOCTOR,

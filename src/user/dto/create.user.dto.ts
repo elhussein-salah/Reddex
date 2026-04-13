@@ -26,4 +26,12 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Password cannot be empty' })
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
   password: string;
+
+  @ApiProperty({
+    example: '+1-202-555-0198',
+    description: 'Contact phone number',
+  })
+  @IsString()
+  @IsNotEmpty({ message: 'Phone number cannot be empty' })
+  phone: string;
 }

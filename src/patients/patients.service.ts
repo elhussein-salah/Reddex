@@ -25,6 +25,7 @@ const PATIENT_SELECT = {
       id: true,
       name: true,
       email: true,
+      phone: true,
       photourl: true,
       role: true,
       isActive: true,
@@ -69,6 +70,7 @@ export class PatientsService {
             create: {
               name: dto.name,
               email: dto.email,
+              phone: dto.phone,
               isActive: true,
               password: hashedPassword,
               photourl: uploadedImage?.url ?? null,
