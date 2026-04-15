@@ -2,14 +2,14 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup SSH
@@ -18,27 +18,40 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Deploy
+      - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             set -e
 
             cd ~/Reddex
 
-            echo "Pull latest code"
+            echo "📥 Pull latest code"
             git pull origin main
 
-            echo "Install deps"
+            echo "⚙️ Load NVM"
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+            echo "🟢 Use Node 20"
+            nvm use 20
+
+            echo "🔍 Node version:"
+            node -v
+
+            echo "📦 Install dependencies"
             npm ci
 
-            echo "Build"
+            echo "⚙️ Build project"
             npm run build
 
-            echo "Prisma migrate"
+            echo "🧬 Run Prisma migrations"
             npx prisma migrate deploy || true
 
-            echo "Restart app"
+            echo "♻️ Restart application"
             pm2 reload reddex || pm2 start dist/src/main.js --name reddex
 
+            echo "💾 Save PM2 process"
             pm2 save
+
+            echo "✅ Deployment finished"
           EOF
