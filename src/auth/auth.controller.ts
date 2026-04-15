@@ -3,13 +3,17 @@ import {
   Controller,
   Post,
   UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { LoginDto, ForgotPasswordDto, ResetPasswordDto } from './dto';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { CreatePatientDto } from 'src/patients/dto/create.patient.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  FileInterceptor,
+  FileFieldsInterceptor,
+} from '@nestjs/platform-express';
 import { multerConfig } from 'src/common/config/multer.config';
 import { imageFileFilter } from 'src/common/utils/file-filter.util';
 import { CreateDoctorDto } from 'src/doctor/dto/create.doctor.dto';
@@ -78,41 +82,49 @@ export class AuthController {
         'email',
         'password',
         'specialty',
-        'bio',
         'phone',
         'SSN',
-        'licenseMedical',
+        'licenseMedicalNumber',
+        'yearsExperience',
       ],
       properties: {
         name: { type: 'string', example: 'Dr. Sarah Ahmed' },
         email: { type: 'string', example: 'sarah.ahmed@example.com' },
         password: { type: 'string', example: 'StrongPass123' },
         specialty: { type: 'string', example: 'Cardiology' },
-        bio: {
-          type: 'string',
-          example: 'Board-certified cardiologist with 10 years of experience.',
-        },
         phone: { type: 'string', example: '+1-202-555-0198' },
         SSN: { type: 'string', example: '123-45-6789' },
-        licenseMedical: { type: 'string', example: 'LIC-MED-2026-001' },
-        profilePicture: {
-          type: 'string',
-          format: 'binary',
-        },
+        licenseMedicalNumber: { type: 'string', example: 'LIC-MED-2026-001' },
+        yearsExperience: { type: 'number', example: 10 },
+        profilePicture: { type: 'string', format: 'binary' },
+        licenseMedicalPhotoUrl: { type: 'string', format: 'binary' },
+        idCardPhotoUrl: { type: 'string', format: 'binary' },
       },
     },
   })
   @UseInterceptors(
-    FileInterceptor('profilePicture', {
-      ...multerConfig,
-      fileFilter: imageFileFilter,
-    }),
+    FileFieldsInterceptor(
+      [
+        { name: 'profilePicture', maxCount: 1 },
+        { name: 'licenseMedicalPhotoUrl', maxCount: 1 },
+        { name: 'idCardPhotoUrl', maxCount: 1 },
+      ],
+      {
+        ...multerConfig,
+        fileFilter: imageFileFilter,
+      },
+    ),
   )
   async registerDoctor(
     @Body() dto: CreateDoctorDto,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFiles()
+    files?: {
+      profilePicture?: Express.Multer.File[];
+      licenseMedicalPhotoUrl?: Express.Multer.File[];
+      idCardPhotoUrl?: Express.Multer.File[];
+    },
   ) {
-    return this.authService.doctorRegister(dto, file);
+    return this.authService.doctorRegister(dto, files);
   }
 
   @Post('forgot-password')

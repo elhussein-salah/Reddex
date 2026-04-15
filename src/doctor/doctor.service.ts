@@ -10,10 +10,11 @@ import { Prisma } from 'src/generated/prisma/client';
 const DOCTOR_SELECT = {
   id: true,
   specialty: true,
-  bio: true,
-  phone: true,
   SSN: true,
-  licenseMedical: true,
+  licenseMedicalNumber: true,
+  licenseMedicalPhotoUrl: true,
+  yearsExperience: true,
+  idCardPhotoUrl: true,
   createdAt: true,
   updatedAt: true,
   userId: true,
@@ -22,6 +23,7 @@ const DOCTOR_SELECT = {
       id: true,
       name: true,
       email: true,
+      phone: true,
       photourl: true,
       role: true,
       isActive: true,
@@ -44,32 +46,55 @@ export class DoctorService {
 
   async createDoctor(
     dto: CreateDoctorDto,
-    file?: Express.Multer.File,
+    files?: {
+      profilePicture?: Express.Multer.File[];
+      licenseMedicalPhotoUrl?: Express.Multer.File[];
+      idCardPhotoUrl?: Express.Multer.File[];
+    },
   ): Promise<DoctorWithUser> {
     const hashedPassword = await argon2.hash(dto.password);
-    let uploadedImage: { publicId: string; url: string } | null = null;
 
-    if (file) {
-      uploadedImage = await this.cloudinary.uploadImage(
-        file,
-        UploadFolder.DOCTOR_PROFILE,
-      );
-    }
+    let uploadedProfileImage: { publicId: string; url: string } | null = null;
+    let uploadedLicenseImage: { publicId: string; url: string } | null = null;
+    let uploadedIdCardImage: { publicId: string; url: string } | null = null;
 
     try {
+      if (files?.profilePicture?.[0]) {
+        uploadedProfileImage = await this.cloudinary.uploadImage(
+          files.profilePicture[0],
+          UploadFolder.DOCTOR_PROFILE,
+        );
+      }
+
+      if (files?.licenseMedicalPhotoUrl?.[0]) {
+        uploadedLicenseImage = await this.cloudinary.uploadImage(
+          files.licenseMedicalPhotoUrl[0],
+          UploadFolder.DOCTOR_LICENSE,
+        );
+      }
+
+      if (files?.idCardPhotoUrl?.[0]) {
+        uploadedIdCardImage = await this.cloudinary.uploadImage(
+          files.idCardPhotoUrl[0],
+          UploadFolder.DOCTOR_DOCTOR,
+        );
+      }
+
       return await this.prisma.doctors.create({
         data: {
           specialty: dto.specialty,
-          bio: dto.bio,
           SSN: dto.SSN,
-          licenseMedical: dto.licenseMedical,
+          licenseMedicalNumber: dto.licenseMedicalNumber,
+          licenseMedicalPhotoUrl: uploadedLicenseImage?.url ?? '',
+          yearsExperience: Number(dto.yearsExperience),
+          idCardPhotoUrl: uploadedIdCardImage?.url ?? '',
           user: {
             create: {
               name: dto.name,
               email: dto.email,
               phone: dto.phone,
               password: hashedPassword,
-              photourl: uploadedImage?.url ?? null,
+              photourl: uploadedProfileImage?.url ?? null,
               role: Role.DOCTOR,
               isActive: true,
             },
@@ -78,7 +103,9 @@ export class DoctorService {
         select: DOCTOR_SELECT,
       });
     } catch (error: unknown) {
-      await this.rollbackImageUpload(uploadedImage);
+      await this.rollbackImageUpload(uploadedProfileImage);
+      await this.rollbackImageUpload(uploadedLicenseImage);
+      await this.rollbackImageUpload(uploadedIdCardImage);
       this.handleUniqueConstraintError(error);
       throw error;
     }

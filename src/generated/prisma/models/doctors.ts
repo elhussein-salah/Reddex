@@ -27,20 +27,24 @@ export type AggregateDoctors = {
 
 export type DoctorsAvgAggregateOutputType = {
   id: number | null
+  yearsExperience: number | null
   userId: number | null
 }
 
 export type DoctorsSumAggregateOutputType = {
   id: number | null
+  yearsExperience: number | null
   userId: number | null
 }
 
 export type DoctorsMinAggregateOutputType = {
   id: number | null
   specialty: string | null
-  bio: string | null
   SSN: string | null
-  licenseMedical: string | null
+  licenseMedicalNumber: string | null
+  licenseMedicalPhotoUrl: string | null
+  yearsExperience: number | null
+  idCardPhotoUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: number | null
@@ -49,9 +53,11 @@ export type DoctorsMinAggregateOutputType = {
 export type DoctorsMaxAggregateOutputType = {
   id: number | null
   specialty: string | null
-  bio: string | null
   SSN: string | null
-  licenseMedical: string | null
+  licenseMedicalNumber: string | null
+  licenseMedicalPhotoUrl: string | null
+  yearsExperience: number | null
+  idCardPhotoUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: number | null
@@ -60,9 +66,11 @@ export type DoctorsMaxAggregateOutputType = {
 export type DoctorsCountAggregateOutputType = {
   id: number
   specialty: number
-  bio: number
   SSN: number
-  licenseMedical: number
+  licenseMedicalNumber: number
+  licenseMedicalPhotoUrl: number
+  yearsExperience: number
+  idCardPhotoUrl: number
   createdAt: number
   updatedAt: number
   userId: number
@@ -72,20 +80,24 @@ export type DoctorsCountAggregateOutputType = {
 
 export type DoctorsAvgAggregateInputType = {
   id?: true
+  yearsExperience?: true
   userId?: true
 }
 
 export type DoctorsSumAggregateInputType = {
   id?: true
+  yearsExperience?: true
   userId?: true
 }
 
 export type DoctorsMinAggregateInputType = {
   id?: true
   specialty?: true
-  bio?: true
   SSN?: true
-  licenseMedical?: true
+  licenseMedicalNumber?: true
+  licenseMedicalPhotoUrl?: true
+  yearsExperience?: true
+  idCardPhotoUrl?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -94,9 +106,11 @@ export type DoctorsMinAggregateInputType = {
 export type DoctorsMaxAggregateInputType = {
   id?: true
   specialty?: true
-  bio?: true
   SSN?: true
-  licenseMedical?: true
+  licenseMedicalNumber?: true
+  licenseMedicalPhotoUrl?: true
+  yearsExperience?: true
+  idCardPhotoUrl?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -105,9 +119,11 @@ export type DoctorsMaxAggregateInputType = {
 export type DoctorsCountAggregateInputType = {
   id?: true
   specialty?: true
-  bio?: true
   SSN?: true
-  licenseMedical?: true
+  licenseMedicalNumber?: true
+  licenseMedicalPhotoUrl?: true
+  yearsExperience?: true
+  idCardPhotoUrl?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -203,9 +219,11 @@ export type doctorsGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type DoctorsGroupByOutputType = {
   id: number
   specialty: string
-  bio: string
   SSN: string
-  licenseMedical: string
+  licenseMedicalNumber: string
+  licenseMedicalPhotoUrl: string
+  yearsExperience: number
+  idCardPhotoUrl: string
   createdAt: Date
   updatedAt: Date
   userId: number
@@ -237,9 +255,11 @@ export type doctorsWhereInput = {
   NOT?: Prisma.doctorsWhereInput | Prisma.doctorsWhereInput[]
   id?: Prisma.IntFilter<"doctors"> | number
   specialty?: Prisma.StringFilter<"doctors"> | string
-  bio?: Prisma.StringFilter<"doctors"> | string
   SSN?: Prisma.StringFilter<"doctors"> | string
-  licenseMedical?: Prisma.StringFilter<"doctors"> | string
+  licenseMedicalNumber?: Prisma.StringFilter<"doctors"> | string
+  licenseMedicalPhotoUrl?: Prisma.StringFilter<"doctors"> | string
+  yearsExperience?: Prisma.IntFilter<"doctors"> | number
+  idCardPhotoUrl?: Prisma.StringFilter<"doctors"> | string
   createdAt?: Prisma.DateTimeFilter<"doctors"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"doctors"> | Date | string
   userId?: Prisma.IntFilter<"doctors"> | number
@@ -250,9 +270,11 @@ export type doctorsWhereInput = {
 export type doctorsOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   specialty?: Prisma.SortOrder
-  bio?: Prisma.SortOrder
   SSN?: Prisma.SortOrder
-  licenseMedical?: Prisma.SortOrder
+  licenseMedicalNumber?: Prisma.SortOrder
+  licenseMedicalPhotoUrl?: Prisma.SortOrder
+  yearsExperience?: Prisma.SortOrder
+  idCardPhotoUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -263,25 +285,29 @@ export type doctorsOrderByWithRelationInput = {
 export type doctorsWhereUniqueInput = Prisma.AtLeast<{
   id?: number
   SSN?: string
-  licenseMedical?: string
+  licenseMedicalNumber?: string
   userId?: number
   AND?: Prisma.doctorsWhereInput | Prisma.doctorsWhereInput[]
   OR?: Prisma.doctorsWhereInput[]
   NOT?: Prisma.doctorsWhereInput | Prisma.doctorsWhereInput[]
   specialty?: Prisma.StringFilter<"doctors"> | string
-  bio?: Prisma.StringFilter<"doctors"> | string
+  licenseMedicalPhotoUrl?: Prisma.StringFilter<"doctors"> | string
+  yearsExperience?: Prisma.IntFilter<"doctors"> | number
+  idCardPhotoUrl?: Prisma.StringFilter<"doctors"> | string
   createdAt?: Prisma.DateTimeFilter<"doctors"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"doctors"> | Date | string
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
   followUps?: Prisma.FollowUpListRelationFilter
-}, "id" | "SSN" | "licenseMedical" | "userId">
+}, "id" | "SSN" | "licenseMedicalNumber" | "userId">
 
 export type doctorsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   specialty?: Prisma.SortOrder
-  bio?: Prisma.SortOrder
   SSN?: Prisma.SortOrder
-  licenseMedical?: Prisma.SortOrder
+  licenseMedicalNumber?: Prisma.SortOrder
+  licenseMedicalPhotoUrl?: Prisma.SortOrder
+  yearsExperience?: Prisma.SortOrder
+  idCardPhotoUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -298,9 +324,11 @@ export type doctorsScalarWhereWithAggregatesInput = {
   NOT?: Prisma.doctorsScalarWhereWithAggregatesInput | Prisma.doctorsScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"doctors"> | number
   specialty?: Prisma.StringWithAggregatesFilter<"doctors"> | string
-  bio?: Prisma.StringWithAggregatesFilter<"doctors"> | string
   SSN?: Prisma.StringWithAggregatesFilter<"doctors"> | string
-  licenseMedical?: Prisma.StringWithAggregatesFilter<"doctors"> | string
+  licenseMedicalNumber?: Prisma.StringWithAggregatesFilter<"doctors"> | string
+  licenseMedicalPhotoUrl?: Prisma.StringWithAggregatesFilter<"doctors"> | string
+  yearsExperience?: Prisma.IntWithAggregatesFilter<"doctors"> | number
+  idCardPhotoUrl?: Prisma.StringWithAggregatesFilter<"doctors"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"doctors"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"doctors"> | Date | string
   userId?: Prisma.IntWithAggregatesFilter<"doctors"> | number
@@ -308,9 +336,11 @@ export type doctorsScalarWhereWithAggregatesInput = {
 
 export type doctorsCreateInput = {
   specialty: string
-  bio: string
   SSN: string
-  licenseMedical: string
+  licenseMedicalNumber: string
+  licenseMedicalPhotoUrl: string
+  yearsExperience: number
+  idCardPhotoUrl: string
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.usersCreateNestedOneWithoutDoctorsInput
@@ -320,9 +350,11 @@ export type doctorsCreateInput = {
 export type doctorsUncheckedCreateInput = {
   id?: number
   specialty: string
-  bio: string
   SSN: string
-  licenseMedical: string
+  licenseMedicalNumber: string
+  licenseMedicalPhotoUrl: string
+  yearsExperience: number
+  idCardPhotoUrl: string
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: number
@@ -331,9 +363,11 @@ export type doctorsUncheckedCreateInput = {
 
 export type doctorsUpdateInput = {
   specialty?: Prisma.StringFieldUpdateOperationsInput | string
-  bio?: Prisma.StringFieldUpdateOperationsInput | string
   SSN?: Prisma.StringFieldUpdateOperationsInput | string
-  licenseMedical?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  yearsExperience?: Prisma.IntFieldUpdateOperationsInput | number
+  idCardPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.usersUpdateOneRequiredWithoutDoctorsNestedInput
@@ -343,9 +377,11 @@ export type doctorsUpdateInput = {
 export type doctorsUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   specialty?: Prisma.StringFieldUpdateOperationsInput | string
-  bio?: Prisma.StringFieldUpdateOperationsInput | string
   SSN?: Prisma.StringFieldUpdateOperationsInput | string
-  licenseMedical?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  yearsExperience?: Prisma.IntFieldUpdateOperationsInput | number
+  idCardPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -355,9 +391,11 @@ export type doctorsUncheckedUpdateInput = {
 export type doctorsCreateManyInput = {
   id?: number
   specialty: string
-  bio: string
   SSN: string
-  licenseMedical: string
+  licenseMedicalNumber: string
+  licenseMedicalPhotoUrl: string
+  yearsExperience: number
+  idCardPhotoUrl: string
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: number
@@ -365,9 +403,11 @@ export type doctorsCreateManyInput = {
 
 export type doctorsUpdateManyMutationInput = {
   specialty?: Prisma.StringFieldUpdateOperationsInput | string
-  bio?: Prisma.StringFieldUpdateOperationsInput | string
   SSN?: Prisma.StringFieldUpdateOperationsInput | string
-  licenseMedical?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  yearsExperience?: Prisma.IntFieldUpdateOperationsInput | number
+  idCardPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -375,9 +415,11 @@ export type doctorsUpdateManyMutationInput = {
 export type doctorsUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   specialty?: Prisma.StringFieldUpdateOperationsInput | string
-  bio?: Prisma.StringFieldUpdateOperationsInput | string
   SSN?: Prisma.StringFieldUpdateOperationsInput | string
-  licenseMedical?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  yearsExperience?: Prisma.IntFieldUpdateOperationsInput | number
+  idCardPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -391,9 +433,11 @@ export type DoctorsNullableScalarRelationFilter = {
 export type doctorsCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   specialty?: Prisma.SortOrder
-  bio?: Prisma.SortOrder
   SSN?: Prisma.SortOrder
-  licenseMedical?: Prisma.SortOrder
+  licenseMedicalNumber?: Prisma.SortOrder
+  licenseMedicalPhotoUrl?: Prisma.SortOrder
+  yearsExperience?: Prisma.SortOrder
+  idCardPhotoUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -401,15 +445,18 @@ export type doctorsCountOrderByAggregateInput = {
 
 export type doctorsAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  yearsExperience?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
 export type doctorsMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   specialty?: Prisma.SortOrder
-  bio?: Prisma.SortOrder
   SSN?: Prisma.SortOrder
-  licenseMedical?: Prisma.SortOrder
+  licenseMedicalNumber?: Prisma.SortOrder
+  licenseMedicalPhotoUrl?: Prisma.SortOrder
+  yearsExperience?: Prisma.SortOrder
+  idCardPhotoUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -418,9 +465,11 @@ export type doctorsMaxOrderByAggregateInput = {
 export type doctorsMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   specialty?: Prisma.SortOrder
-  bio?: Prisma.SortOrder
   SSN?: Prisma.SortOrder
-  licenseMedical?: Prisma.SortOrder
+  licenseMedicalNumber?: Prisma.SortOrder
+  licenseMedicalPhotoUrl?: Prisma.SortOrder
+  yearsExperience?: Prisma.SortOrder
+  idCardPhotoUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -428,6 +477,7 @@ export type doctorsMinOrderByAggregateInput = {
 
 export type doctorsSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  yearsExperience?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -484,9 +534,11 @@ export type doctorsUpdateOneRequiredWithoutFollowUpsNestedInput = {
 
 export type doctorsCreateWithoutUserInput = {
   specialty: string
-  bio: string
   SSN: string
-  licenseMedical: string
+  licenseMedicalNumber: string
+  licenseMedicalPhotoUrl: string
+  yearsExperience: number
+  idCardPhotoUrl: string
   createdAt?: Date | string
   updatedAt?: Date | string
   followUps?: Prisma.FollowUpCreateNestedManyWithoutDoctorInput
@@ -495,9 +547,11 @@ export type doctorsCreateWithoutUserInput = {
 export type doctorsUncheckedCreateWithoutUserInput = {
   id?: number
   specialty: string
-  bio: string
   SSN: string
-  licenseMedical: string
+  licenseMedicalNumber: string
+  licenseMedicalPhotoUrl: string
+  yearsExperience: number
+  idCardPhotoUrl: string
   createdAt?: Date | string
   updatedAt?: Date | string
   followUps?: Prisma.FollowUpUncheckedCreateNestedManyWithoutDoctorInput
@@ -521,9 +575,11 @@ export type doctorsUpdateToOneWithWhereWithoutUserInput = {
 
 export type doctorsUpdateWithoutUserInput = {
   specialty?: Prisma.StringFieldUpdateOperationsInput | string
-  bio?: Prisma.StringFieldUpdateOperationsInput | string
   SSN?: Prisma.StringFieldUpdateOperationsInput | string
-  licenseMedical?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  yearsExperience?: Prisma.IntFieldUpdateOperationsInput | number
+  idCardPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   followUps?: Prisma.FollowUpUpdateManyWithoutDoctorNestedInput
@@ -532,9 +588,11 @@ export type doctorsUpdateWithoutUserInput = {
 export type doctorsUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   specialty?: Prisma.StringFieldUpdateOperationsInput | string
-  bio?: Prisma.StringFieldUpdateOperationsInput | string
   SSN?: Prisma.StringFieldUpdateOperationsInput | string
-  licenseMedical?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  yearsExperience?: Prisma.IntFieldUpdateOperationsInput | number
+  idCardPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   followUps?: Prisma.FollowUpUncheckedUpdateManyWithoutDoctorNestedInput
@@ -542,9 +600,11 @@ export type doctorsUncheckedUpdateWithoutUserInput = {
 
 export type doctorsCreateWithoutFollowUpsInput = {
   specialty: string
-  bio: string
   SSN: string
-  licenseMedical: string
+  licenseMedicalNumber: string
+  licenseMedicalPhotoUrl: string
+  yearsExperience: number
+  idCardPhotoUrl: string
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.usersCreateNestedOneWithoutDoctorsInput
@@ -553,9 +613,11 @@ export type doctorsCreateWithoutFollowUpsInput = {
 export type doctorsUncheckedCreateWithoutFollowUpsInput = {
   id?: number
   specialty: string
-  bio: string
   SSN: string
-  licenseMedical: string
+  licenseMedicalNumber: string
+  licenseMedicalPhotoUrl: string
+  yearsExperience: number
+  idCardPhotoUrl: string
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: number
@@ -579,9 +641,11 @@ export type doctorsUpdateToOneWithWhereWithoutFollowUpsInput = {
 
 export type doctorsUpdateWithoutFollowUpsInput = {
   specialty?: Prisma.StringFieldUpdateOperationsInput | string
-  bio?: Prisma.StringFieldUpdateOperationsInput | string
   SSN?: Prisma.StringFieldUpdateOperationsInput | string
-  licenseMedical?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  yearsExperience?: Prisma.IntFieldUpdateOperationsInput | number
+  idCardPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.usersUpdateOneRequiredWithoutDoctorsNestedInput
@@ -590,9 +654,11 @@ export type doctorsUpdateWithoutFollowUpsInput = {
 export type doctorsUncheckedUpdateWithoutFollowUpsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   specialty?: Prisma.StringFieldUpdateOperationsInput | string
-  bio?: Prisma.StringFieldUpdateOperationsInput | string
   SSN?: Prisma.StringFieldUpdateOperationsInput | string
-  licenseMedical?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseMedicalPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  yearsExperience?: Prisma.IntFieldUpdateOperationsInput | number
+  idCardPhotoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -632,9 +698,11 @@ export type DoctorsCountOutputTypeCountFollowUpsArgs<ExtArgs extends runtime.Typ
 export type doctorsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   specialty?: boolean
-  bio?: boolean
   SSN?: boolean
-  licenseMedical?: boolean
+  licenseMedicalNumber?: boolean
+  licenseMedicalPhotoUrl?: boolean
+  yearsExperience?: boolean
+  idCardPhotoUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -646,9 +714,11 @@ export type doctorsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type doctorsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   specialty?: boolean
-  bio?: boolean
   SSN?: boolean
-  licenseMedical?: boolean
+  licenseMedicalNumber?: boolean
+  licenseMedicalPhotoUrl?: boolean
+  yearsExperience?: boolean
+  idCardPhotoUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -658,9 +728,11 @@ export type doctorsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type doctorsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   specialty?: boolean
-  bio?: boolean
   SSN?: boolean
-  licenseMedical?: boolean
+  licenseMedicalNumber?: boolean
+  licenseMedicalPhotoUrl?: boolean
+  yearsExperience?: boolean
+  idCardPhotoUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -670,15 +742,17 @@ export type doctorsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type doctorsSelectScalar = {
   id?: boolean
   specialty?: boolean
-  bio?: boolean
   SSN?: boolean
-  licenseMedical?: boolean
+  licenseMedicalNumber?: boolean
+  licenseMedicalPhotoUrl?: boolean
+  yearsExperience?: boolean
+  idCardPhotoUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
 }
 
-export type doctorsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "specialty" | "bio" | "SSN" | "licenseMedical" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["doctors"]>
+export type doctorsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "specialty" | "SSN" | "licenseMedicalNumber" | "licenseMedicalPhotoUrl" | "yearsExperience" | "idCardPhotoUrl" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["doctors"]>
 export type doctorsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.usersDefaultArgs<ExtArgs>
   followUps?: boolean | Prisma.doctors$followUpsArgs<ExtArgs>
@@ -700,9 +774,11 @@ export type $doctorsPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     specialty: string
-    bio: string
     SSN: string
-    licenseMedical: string
+    licenseMedicalNumber: string
+    licenseMedicalPhotoUrl: string
+    yearsExperience: number
+    idCardPhotoUrl: string
     createdAt: Date
     updatedAt: Date
     userId: number
@@ -1133,9 +1209,11 @@ export interface Prisma__doctorsClient<T, Null = never, ExtArgs extends runtime.
 export interface doctorsFieldRefs {
   readonly id: Prisma.FieldRef<"doctors", 'Int'>
   readonly specialty: Prisma.FieldRef<"doctors", 'String'>
-  readonly bio: Prisma.FieldRef<"doctors", 'String'>
   readonly SSN: Prisma.FieldRef<"doctors", 'String'>
-  readonly licenseMedical: Prisma.FieldRef<"doctors", 'String'>
+  readonly licenseMedicalNumber: Prisma.FieldRef<"doctors", 'String'>
+  readonly licenseMedicalPhotoUrl: Prisma.FieldRef<"doctors", 'String'>
+  readonly yearsExperience: Prisma.FieldRef<"doctors", 'Int'>
+  readonly idCardPhotoUrl: Prisma.FieldRef<"doctors", 'String'>
   readonly createdAt: Prisma.FieldRef<"doctors", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"doctors", 'DateTime'>
   readonly userId: Prisma.FieldRef<"doctors", 'Int'>

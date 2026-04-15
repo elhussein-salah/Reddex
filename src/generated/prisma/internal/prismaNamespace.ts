@@ -945,9 +945,11 @@ export type LabResultScalarFieldEnum = (typeof LabResultScalarFieldEnum)[keyof t
 export const DoctorsScalarFieldEnum = {
   id: 'id',
   specialty: 'specialty',
-  bio: 'bio',
   SSN: 'SSN',
-  licenseMedical: 'licenseMedical',
+  licenseMedicalNumber: 'licenseMedicalNumber',
+  licenseMedicalPhotoUrl: 'licenseMedicalPhotoUrl',
+  yearsExperience: 'yearsExperience',
+  idCardPhotoUrl: 'idCardPhotoUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { CreateUserDto } from 'src/user/dto';
 
 export class CreateDoctorDto extends CreateUserDto {
@@ -10,14 +10,6 @@ export class CreateDoctorDto extends CreateUserDto {
   @IsString()
   @IsNotEmpty()
   specialty: string;
-
-  @ApiProperty({
-    example: 'Board-certified cardiologist with 10 years of experience.',
-    description: 'Doctor professional biography',
-  })
-  @IsString()
-  @IsNotEmpty()
-  bio: string;
 
   @ApiProperty({
     example: '123-45-6789',
@@ -33,5 +25,13 @@ export class CreateDoctorDto extends CreateUserDto {
   })
   @IsString()
   @IsNotEmpty()
-  licenseMedical: string;
+  licenseMedicalNumber: string;
+
+  @ApiProperty({
+    example: 10,
+    description: 'Years of medical experience',
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  yearsExperience: number;
 }

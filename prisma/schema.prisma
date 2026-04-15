@@ -67,27 +67,29 @@ model LabReport {
 }
 
 model LabResult {
-  id        Int @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   report_id Int
-
-  name  String // Hb, RBC, etc
-  value Float
-  unit  String? // g/dL, %, etc
+  // resultsJson Json?
+  name      String // Hb, RBC, etc
+  value     Float
+  unit      String? // g/dL, %, etc
 
   report LabReport @relation(fields: [report_id], references: [id])
 }
 
 model doctors {
-  id             Int        @id @default(autoincrement())
-  specialty      String
-  bio            String
-  SSN            String     @unique
-  licenseMedical String     @unique
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  userId         Int        @unique
-  user           users      @relation(fields: [userId], references: [id])
-  followUps      FollowUp[]
+  id                     Int        @id @default(autoincrement())
+  specialty              String
+  SSN                    String     @unique
+  licenseMedicalNumber   String     @unique
+  licenseMedicalPhotoUrl String
+  yearsExperience        Int
+  idCardPhotoUrl         String
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
+  userId                 Int        @unique
+  user                   users      @relation(fields: [userId], references: [id])
+  followUps              FollowUp[]
 }
 
 model FollowUp {

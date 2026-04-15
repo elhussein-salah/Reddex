@@ -83,9 +83,13 @@ export class AuthService {
 
   async doctorRegister(
     dto: CreateDoctorDto,
-    file?: Express.Multer.File,
+    files?: {
+      profilePicture?: Express.Multer.File[];
+      licenseMedicalPhotoUrl?: Express.Multer.File[];
+      idCardPhotoUrl?: Express.Multer.File[];
+    },
   ): Promise<ApiResponse> {
-    const doctor = await this.doctorService.createDoctor(dto, file);
+    const doctor = await this.doctorService.createDoctor(dto, files);
     const payload = {
       sub: doctor.user.id,
       username: doctor.user.email,
@@ -127,8 +131,10 @@ export class AuthService {
         });
       } catch (error) {
         console.error('Twilio Error:', error);
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
         throw new BadRequestException(
-          'Failed to send SMS error message: ' + error.message,
+          'Failed to send SMS error message: ' + errorMessage,
         );
       }
     } else {
