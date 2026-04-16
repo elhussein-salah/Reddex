@@ -6,6 +6,7 @@ import { CreateDoctorDto } from './dto/create.doctor.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { UploadFolder } from 'src/enums';
 import { Prisma } from 'src/generated/prisma/client';
+import { normalizePhone } from 'src/common/utils/phone.util';
 
 const DOCTOR_SELECT = {
   id: true,
@@ -92,7 +93,7 @@ export class DoctorService {
             create: {
               name: dto.name,
               email: dto.email,
-              phone: dto.phone,
+              phone: normalizePhone(dto.phone),
               password: hashedPassword,
               photourl: uploadedProfileImage?.url ?? null,
               role: Role.DOCTOR,

@@ -11,6 +11,7 @@ import { CreatePatientDto } from './dto/create.patient.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { UploadFolder } from 'src/enums';
 import { Prisma } from 'src/generated/prisma/client';
+import { normalizePhone } from 'src/common/utils/phone.util';
 
 const PATIENT_SELECT = {
   id: true,
@@ -70,7 +71,7 @@ export class PatientsService {
             create: {
               name: dto.name,
               email: dto.email,
-              phone: dto.phone,
+              phone: normalizePhone(dto.phone),
               isActive: true,
               password: hashedPassword,
               photourl: uploadedImage?.url ?? null,

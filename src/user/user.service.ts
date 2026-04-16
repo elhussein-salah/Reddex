@@ -13,6 +13,7 @@ import { ApiResponse } from '../common/interfaces/api.response';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UploadFolder } from '../enums';
 import { Role } from 'src/generated/prisma/enums';
+import { normalizePhone } from 'src/common/utils/phone.util';
 
 const USER_SELECT = {
   id: true,
@@ -56,7 +57,7 @@ export class UserService {
         data: {
           name: data.name,
           email: data.email,
-          phone: data.phone,
+          phone: normalizePhone(data.phone),
           password: hashedPassword,
           role: role,
           photourl: uploadedImage?.url ?? null,
@@ -149,6 +150,10 @@ export class UserService {
 
     if (updateData.password) {
       updateData.password = await argon2.hash(updateData.password);
+    }
+
+    if (updateData.phone) {
+      updateData.phone = normalizePhone(updateData.phone);
     }
 
     await this.prisma.users.update({

@@ -49,7 +49,7 @@ export class AuthController {
         email: { type: 'string', example: 'john@example.com' },
         password: { type: 'string', example: 'StrongPass123' },
         birthdate: { type: 'string', example: '1996-05-14T00:00:00.000Z' },
-        phone: { type: 'string', example: '+1-202-555-0198' },
+        phone: { type: 'string', example: '+12025550198' },
         SSN: { type: 'string', example: '123-45-6789' },
         healthStatus: { type: 'string', example: 'Stable' },
         profilePicture: {
@@ -92,7 +92,7 @@ export class AuthController {
         email: { type: 'string', example: 'sarah.ahmed@example.com' },
         password: { type: 'string', example: 'StrongPass123' },
         specialty: { type: 'string', example: 'Cardiology' },
-        phone: { type: 'string', example: '+1-202-555-0198' },
+        phone: { type: 'string', example: '+12025550198' },
         SSN: { type: 'string', example: '123-45-6789' },
         licenseMedicalNumber: { type: 'string', example: 'LIC-MED-2026-001' },
         yearsExperience: { type: 'number', example: 10 },

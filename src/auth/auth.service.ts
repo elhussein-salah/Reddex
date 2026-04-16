@@ -17,6 +17,7 @@ import * as twilio from 'twilio';
 import * as argon2 from 'argon2';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { normalizePhone } from 'src/common/utils/phone.util';
 
 @Injectable()
 export class AuthService {
@@ -107,9 +108,11 @@ export class AuthService {
   }
 
   async forgotPassword(dto: ForgotPasswordDto): Promise<ApiResponse> {
-    // We check the doctors table for the given phone number since that's the only place phone exists
+    const normalizedPhone = normalizePhone(dto.phone);
+
+    // We check users by phone because phone is stored on the users table.
     const user = await this.prisma.users.findUnique({
-      where: { phone: dto.phone },
+      where: { phone: normalizedPhone },
     });
     if (!user) {
       throw new NotFoundException('User with this phone number not found');
@@ -119,7 +122,7 @@ export class AuthService {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes expiration
 
-    this.otps.set(dto.phone, { otp, expiresAt });
+    this.otps.set(normalizedPhone, { otp, expiresAt });
 
     // Send OTP via Twilio
     if (this.twilioClient && process.env.TWILIO_PHONE_NUMBER) {
@@ -127,7 +130,7 @@ export class AuthService {
         await this.twilioClient.messages.create({
           body: `Your password reset OTP is ${otp}. It is valid for 5 minutes.`,
           from: process.env.TWILIO_PHONE_NUMBER,
-          to: dto.phone,
+          to: normalizedPhone,
         });
       } catch (error) {
         console.error('Twilio Error:', error);
@@ -148,14 +151,15 @@ export class AuthService {
   }
 
   async resetPassword(dto: ResetPasswordDto): Promise<ApiResponse> {
-    const record = this.otps.get(dto.phone);
+    const normalizedPhone = normalizePhone(dto.phone);
+    const record = this.otps.get(normalizedPhone);
 
     if (!record) {
       throw new BadRequestException('Invalid or expired OTP');
     }
 
     if (Date.now() > record.expiresAt) {
-      this.otps.delete(dto.phone);
+      this.otps.delete(normalizedPhone);
       throw new BadRequestException('OTP has expired');
     }
 
@@ -164,7 +168,7 @@ export class AuthService {
     }
 
     const user = await this.prisma.users.findUnique({
-      where: { phone: dto.phone },
+      where: { phone: normalizedPhone },
     });
 
     if (!user) {
@@ -180,7 +184,7 @@ export class AuthService {
     });
 
     // Invalidate OTP after success
-    this.otps.delete(dto.phone);
+    this.otps.delete(normalizedPhone);
 
     return {
       message: 'Password reset successfully',

@@ -1,5 +1,17 @@
+import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  E164_PHONE_ERROR_MESSAGE,
+  E164_PHONE_REGEX,
+  normalizePhone,
+} from 'src/common/utils/phone.util';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  Matches,
+  MinLength,
+} from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -28,10 +40,16 @@ export class CreateUserDto {
   password: string;
 
   @ApiProperty({
-    example: '+1-202-555-0198',
-    description: 'Contact phone number',
+    example: '+12025550198',
+    description: 'Contact phone number in international format (E.164)',
   })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? normalizePhone(value) : value,
+  )
   @IsString()
   @IsNotEmpty({ message: 'Phone number cannot be empty' })
+  @Matches(E164_PHONE_REGEX, {
+    message: E164_PHONE_ERROR_MESSAGE,
+  })
   phone: string;
 }
