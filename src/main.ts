@@ -9,6 +9,8 @@ async function bootstrap() {
     logger: ['log', 'error', 'warn', 'debug', 'verbose'],
   });
 
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('Reddex')
     .setDescription('The Reddex API documentation')

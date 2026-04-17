@@ -41,6 +41,9 @@ jobs:
             echo "📦 Install dependencies"
             npm ci
 
+            echo "🧬 Generate Prisma Client"
+            npx prisma generate
+
             echo "⚙️ Build project"
             npm run build
 

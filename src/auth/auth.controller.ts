@@ -17,7 +17,9 @@ import {
 import { multerConfig } from 'src/common/config/multer.config';
 import { imageFileFilter } from 'src/common/utils/file-filter.util';
 import { CreateDoctorDto } from 'src/doctor/dto/create.doctor.dto';
+import { Throttle } from '@nestjs/throttler';
 
+@Throttle({ default: { ttl: 60000, limit: 5 } })
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}

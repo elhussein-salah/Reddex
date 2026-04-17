@@ -1,5 +1,2 @@
-export enum Role {
-  PATIENT = 'PATIENT',
-  DOCTOR = 'DOCTOR',
-  ADMIN = 'ADMIN',
-}
+// Re-export from Prisma — single source of truth for the Role enum.
+export { Role } from 'src/generated/prisma/enums';

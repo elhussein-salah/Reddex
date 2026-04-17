@@ -28,7 +28,7 @@ import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/enums';
 import { RolesGuard } from 'src/auth/role.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
-import type { AuthenticatedRequest } from 'src/auth/auth.guard';
+import type { AuthenticatedRequest } from 'src/common/interfaces/AuthenticatedRequest';
 
 @ApiTags('Lab Reports')
 @ApiBearerAuth('JWT-auth')

@@ -14,20 +14,12 @@ export interface JwtPayload {
   role: Role;
 }
 
-export type AuthenticatedRequest = Request & {
-  user?: {
-    id: number;
-    username: string;
-    role: Role;
-  };
-};
-
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
@@ -41,8 +33,9 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException('Invalid token payload');
       }
 
-      request.user = {
-        id: payload.sub,
+      // Use 'sub' consistently to match JWT convention
+      (request as any).user = {
+        sub: payload.sub,
         username: payload.username,
         role: payload.role,
       };

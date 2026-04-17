@@ -7,28 +7,49 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CreatePatientDto } from './dto/create.patient.dto';
+import { UpdatePatientDto } from './dto/update.patient.dto';
 import { PatientsService } from './patients.service';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/enums';
 import { RolesGuard } from 'src/auth/role.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerConfig } from 'src/common/config/multer.config';
+import { imageFileFilter } from 'src/common/utils/file-filter.util';
 
 @ApiTags('Patients')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(AuthGuard, RolesGuard)
-@Roles(Role.ADMIN)
+@Roles(Role.ADMIN, Role.PATIENT, Role.DOCTOR)
 @Controller('patients')
 export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a patient' })
-  create(@Body() dto: CreatePatientDto) {
-    return this.patientsService.createPatient(dto);
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileInterceptor('profilePicture', {
+      ...multerConfig,
+      fileFilter: imageFileFilter,
+    }),
+  )
+  create(
+    @Body() dto: CreatePatientDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.patientsService.createPatient(dto, file);
   }
 
   @Get()
@@ -44,15 +65,17 @@ export class PatientsController {
   }
 
   @Patch(':id')
+  @Roles(Role.ADMIN, Role.PATIENT)
   @ApiOperation({ summary: 'Update patient by ID' })
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: Partial<CreatePatientDto>,
+    @Body() dto: UpdatePatientDto,
   ) {
     return this.patientsService.updatePatient(id, dto);
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN, Role.PATIENT)
   @ApiOperation({ summary: 'Delete patient by ID' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.patientsService.deletePatient(id);

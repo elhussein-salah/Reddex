@@ -40,14 +40,20 @@ export class CreateLabReportDto {
     example: '[{"name":"Hb","value":13.5}]',
   })
   @Transform(({ value }) => {
-    const parsed = JSON.parse(value) as LabResultDto[];
-    return parsed.map((item: LabResultDto) =>
-      plainToInstance(LabResultDto, {
-        name: String(item.name),
-        value: Number(item.value),
-        unit: String(item.unit),
-      }),
-    );
+    if (Array.isArray(value)) return value;
+    if (typeof value !== 'string') return value;
+    try {
+      const parsed = JSON.parse(value) as LabResultDto[];
+      return parsed.map((item: LabResultDto) =>
+        plainToInstance(LabResultDto, {
+          name: String(item.name),
+          value: Number(item.value),
+          unit: item.unit != null ? String(item.unit) : undefined,
+        }),
+      );
+    } catch {
+      return value; // Let class-validator report the error
+    }
   })
   @IsArray()
   @ValidateNested({ each: true })

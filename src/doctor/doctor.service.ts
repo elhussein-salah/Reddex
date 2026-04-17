@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { Role } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -46,6 +46,21 @@ export class DoctorService {
     private readonly prisma: PrismaService,
     private readonly cloudinary: CloudinaryService,
   ) {}
+
+  async findAll(): Promise<DoctorWithUser[]> {
+    return this.prisma.doctors.findMany({ select: DOCTOR_SELECT });
+  }
+
+  async findById(id: number): Promise<DoctorWithUser> {
+    const doctor = await this.prisma.doctors.findUnique({
+      where: { id },
+      select: DOCTOR_SELECT,
+    });
+    if (!doctor) {
+      throw new NotFoundException(`Doctor with ID ${id} not found`);
+    }
+    return doctor;
+  }
 
   async createDoctor(
     dto: CreateDoctorDto,
@@ -108,7 +123,10 @@ export class DoctorService {
       });
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
-      this.logger.error(`Doctor creation failed for email: ${dto.email}`, err.stack);
+      this.logger.error(
+        `Doctor creation failed for email: ${dto.email}`,
+        err.stack,
+      );
       await this.rollbackImageUpload(uploadedProfileImage);
       await this.rollbackImageUpload(uploadedLicenseImage);
       await this.rollbackImageUpload(uploadedIdCardImage);
@@ -134,8 +152,14 @@ export class DoctorService {
     try {
       await this.cloudinary.deleteFile(image.publicId);
     } catch (rollbackErr: unknown) {
-      const err = rollbackErr instanceof Error ? rollbackErr : new Error(String(rollbackErr));
-      this.logger.error(`Image rollback failed for publicId: ${image.publicId}`, err.stack);
+      const err =
+        rollbackErr instanceof Error
+          ? rollbackErr
+          : new Error(String(rollbackErr));
+      this.logger.error(
+        `Image rollback failed for publicId: ${image.publicId}`,
+        err.stack,
+      );
     }
   }
 }

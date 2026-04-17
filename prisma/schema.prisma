@@ -49,7 +49,7 @@ model patients {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   userId       Int         @unique
-  user         users       @relation(fields: [userId], references: [id])
+  user         users       @relation(fields: [userId], references: [id], onDelete: Cascade)
   labReports   LabReport[]
   followUps    FollowUp[]
 }
@@ -62,7 +62,7 @@ model LabReport {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  patient patients    @relation(fields: [patient_id], references: [id])
+  patient patients    @relation(fields: [patient_id], references: [id], onDelete: Cascade)
   results LabResult[]
 }
 
@@ -74,7 +74,7 @@ model LabResult {
   value     Float
   unit      String? // g/dL, %, etc
 
-  report LabReport @relation(fields: [report_id], references: [id])
+  report LabReport @relation(fields: [report_id], references: [id], onDelete: Cascade)
 }
 
 model doctors {
@@ -88,7 +88,7 @@ model doctors {
   createdAt              DateTime   @default(now())
   updatedAt              DateTime   @updatedAt
   userId                 Int        @unique
-  user                   users      @relation(fields: [userId], references: [id])
+  user                   users      @relation(fields: [userId], references: [id], onDelete: Cascade)
   followUps              FollowUp[]
 }
 
@@ -103,8 +103,8 @@ model FollowUp {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  doctor  doctors  @relation(fields: [doctorId], references: [id])
-  patient patients @relation(fields: [patientId], references: [id])
+  doctor  doctors  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient patients @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
   @@index([doctorId, patientId])
 }

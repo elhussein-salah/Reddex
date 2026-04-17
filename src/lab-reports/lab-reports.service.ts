@@ -28,11 +28,11 @@ export class LabReportService {
   }
 
   private async assertLabReportAccessByPatientId(
-    user: { id: number; role: Role },
+    user: { sub: number; role: Role },
     reportPatientId: number,
   ): Promise<void> {
     if (user.role === Role.PATIENT) {
-      const patientId = await this.getPatientIdForUser(user.id);
+      const patientId = await this.getPatientIdForUser(user.sub);
       if (!patientId || patientId !== reportPatientId) {
         throw new ForbiddenException(
           'You are not authorized to access this lab report',
@@ -47,12 +47,12 @@ export class LabReportService {
 
   async create(
     dto: CreateLabReportDto,
-    user: { id: number; role: Role },
+    user: { sub: number; role: Role },
     file?: Express.Multer.File,
   ) {
-    this.logger.log(`Creating lab report for patientId: ${dto.patient_id} by userId: ${user.id}`);
+    this.logger.log(`Creating lab report for patientId: ${dto.patient_id} by userId: ${user.sub}`);
     if (user.role === Role.PATIENT) {
-      const patientId = await this.getPatientIdForUser(user.id);
+      const patientId = await this.getPatientIdForUser(user.sub);
       if (!patientId || patientId !== dto.patient_id) {
         throw new ForbiddenException(
           'Patients may only create lab reports for their own account',
@@ -89,9 +89,9 @@ export class LabReportService {
     });
   }
 
-  async findAll(user: { id: number; role: Role }) {
+  async findAll(user: { sub: number; role: Role }) {
     if (user.role === Role.PATIENT) {
-      const patientId = await this.getPatientIdForUser(user.id);
+      const patientId = await this.getPatientIdForUser(user.sub);
       if (!patientId) {
         throw new ForbiddenException('Patient profile not found');
       }
@@ -118,7 +118,7 @@ export class LabReportService {
 
   async findAllByPatientId(
     patientId: number,
-    user: { id: number; role: Role },
+    user: { sub: number; role: Role },
   ) {
     if (user.role !== Role.DOCTOR && user.role !== Role.ADMIN) {
       throw new ForbiddenException(
@@ -134,8 +134,8 @@ export class LabReportService {
       },
     });
   }
-  async findOne(id: number, user: { id: number; role: Role }) {
-    this.logger.log(`Fetching lab report id: ${id} by userId: ${user.id}`);
+  async findOne(id: number, user: { sub: number; role: Role }) {
+    this.logger.log(`Fetching lab report id: ${id} by userId: ${user.sub}`);
     const report = await this.prisma.labReport.findUnique({
       where: { id },
       include: {
@@ -152,10 +152,10 @@ export class LabReportService {
   async update(
     id: number,
     dto: UpdateLabReportDto,
-    user: { id: number; role: Role },
+    user: { sub: number; role: Role },
     file?: Express.Multer.File,
   ) {
-    this.logger.log(`Updating lab report id: ${id} by userId: ${user.id}`);
+    this.logger.log(`Updating lab report id: ${id} by userId: ${user.sub}`);
     const existing = await this.prisma.labReport.findUnique({
       where: { id },
       select: { patient_id: true },
@@ -192,8 +192,8 @@ export class LabReportService {
     });
   }
 
-  async remove(id: number, user: { id: number; role: Role }) {
-    this.logger.log(`Deleting lab report id: ${id} by userId: ${user.id}`);
+  async remove(id: number, user: { sub: number; role: Role }) {
+    this.logger.log(`Deleting lab report id: ${id} by userId: ${user.sub}`);
     const existing = await this.prisma.labReport.findUnique({
       where: { id },
       select: { patient_id: true },

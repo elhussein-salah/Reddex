@@ -87,7 +87,10 @@ export class PatientsService {
       });
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
-      this.logger.error(`Patient creation failed for email: ${dto.email}`, err.stack);
+      this.logger.error(
+        `Patient creation failed for email: ${dto.email}`,
+        err.stack,
+      );
       await this.rollbackImageUpload(uploadedImage);
       this.handleUniqueConstraintError(error);
       throw error;
@@ -224,7 +227,10 @@ export class PatientsService {
     try {
       await this.cloudinary.deleteFile(image.publicId);
     } catch (rollbackErr: unknown) {
-      const err = rollbackErr instanceof Error ? rollbackErr : new Error(String(rollbackErr));
+      const err =
+        rollbackErr instanceof Error
+          ? rollbackErr
+          : new Error(String(rollbackErr));
       this.logger.error(`Image rollback failed`, err.stack);
     }
   }

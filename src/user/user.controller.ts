@@ -25,25 +25,23 @@ import {
 } from '@nestjs/swagger';
 import { imageFileFilter } from '../common/utils/file-filter.util';
 import { multerConfig } from '../common/config/multer.config';
-import { Role } from 'src/generated/prisma/browser';
+import { Role } from 'src/enums';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { Request } from 'express';
+import { RolesGuard } from 'src/auth/role.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import { UploadFolder } from 'src/enums';
-
-type AuthenticatedRequest = Request & {
-  user?: {
-    sub: number;
-    role: string;
-  };
-};
+import type { AuthenticatedRequest } from 'src/common/interfaces/AuthenticatedRequest';
 
 @ApiTags('Users')
+@ApiBearerAuth('JWT-auth')
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   // ================= CREATE =================
   @Post()
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Create user with optional profile picture' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -72,7 +70,6 @@ export class UserController {
     @Body() dto: CreateUserDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    // console.log(`api key: ${process.env.CLOUDINARY_API_KEY}`);
     return this.userService.create(
       dto,
       Role.PATIENT,
@@ -83,13 +80,13 @@ export class UserController {
 
   // ================= READ =================
   @Get()
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Get all users' })
   findAll() {
     return this.userService.findAll();
   }
-  @ApiBearerAuth('JWT-auth')
+
   @Get('me')
-  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get current user profile from JWT' })
   getProfile(@Req() req: AuthenticatedRequest) {
     if (!req.user) {
@@ -108,6 +105,7 @@ export class UserController {
   // }
 
   @Get('email/:email')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Get user by email' })
   findByEmail(@Param('email') email: string) {
     return this.userService.findByEmail(email);
@@ -115,6 +113,7 @@ export class UserController {
 
   // ================= UPDATE =================
   @Patch(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Update user' })
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUserDto) {
     return this.userService.update(id, dto);
@@ -122,6 +121,7 @@ export class UserController {
 
   // ================= DELETE =================
   @Delete(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Delete user' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(id);

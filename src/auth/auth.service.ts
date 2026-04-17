@@ -74,7 +74,9 @@ export class AuthService {
       role: patient.user.role,
     };
 
-    this.logger.log(`Patient registered successfully – userId: ${patient.user.id}`);
+    this.logger.log(
+      `Patient registered successfully – userId: ${patient.user.id}`,
+    );
 
     return {
       data: {
@@ -103,7 +105,9 @@ export class AuthService {
       role: doctor.user.role,
     };
 
-    this.logger.log(`Doctor registered successfully – userId: ${doctor.user.id}`);
+    this.logger.log(
+      `Doctor registered successfully – userId: ${doctor.user.id}`,
+    );
 
     return {
       data: {
@@ -134,14 +138,17 @@ export class AuthService {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
+    // Hash OTP before storing (same as passwords — never store plaintext)
+    const hashedOtp = await argon2.hash(otp);
+
     // Delete existing OTPs for this email
     await this.prisma.passwordResetOtp.deleteMany({ where: { email } });
 
-    // Save new OTP
+    // Save hashed OTP
     await this.prisma.passwordResetOtp.create({
       data: {
         email,
-        otp,
+        otp: hashedOtp,
         expiresAt,
         attempts: 0,
       },
@@ -200,12 +207,15 @@ export class AuthService {
       );
     }
 
-    if (otpRecord.otp !== otp) {
+    const isOtpValid = await argon2.verify(otpRecord.otp, otp);
+    if (!isOtpValid) {
       await this.prisma.passwordResetOtp.update({
         where: { id: otpRecord.id },
         data: { attempts: { increment: 1 } },
       });
-      this.logger.warn(`Reset failed – invalid OTP for: ${email} (attempt ${otpRecord.attempts + 1})`);
+      this.logger.warn(
+        `Reset failed – invalid OTP for: ${email} (attempt ${otpRecord.attempts + 1})`,
+      );
       throw new BadRequestException('Invalid OTP');
     }
 
