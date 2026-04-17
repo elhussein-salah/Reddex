@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -11,6 +12,8 @@ import { Role, UploadFolder } from 'src/enums';
 
 @Injectable()
 export class LabReportService {
+  private readonly logger = new Logger(LabReportService.name);
+
   constructor(
     private prisma: PrismaService,
     private cloudinary: CloudinaryService,
@@ -47,6 +50,7 @@ export class LabReportService {
     user: { id: number; role: Role },
     file?: Express.Multer.File,
   ) {
+    this.logger.log(`Creating lab report for patientId: ${dto.patient_id} by userId: ${user.id}`);
     if (user.role === Role.PATIENT) {
       const patientId = await this.getPatientIdForUser(user.id);
       if (!patientId || patientId !== dto.patient_id) {
@@ -131,6 +135,7 @@ export class LabReportService {
     });
   }
   async findOne(id: number, user: { id: number; role: Role }) {
+    this.logger.log(`Fetching lab report id: ${id} by userId: ${user.id}`);
     const report = await this.prisma.labReport.findUnique({
       where: { id },
       include: {
@@ -150,6 +155,7 @@ export class LabReportService {
     user: { id: number; role: Role },
     file?: Express.Multer.File,
   ) {
+    this.logger.log(`Updating lab report id: ${id} by userId: ${user.id}`);
     const existing = await this.prisma.labReport.findUnique({
       where: { id },
       select: { patient_id: true },
@@ -187,6 +193,7 @@ export class LabReportService {
   }
 
   async remove(id: number, user: { id: number; role: Role }) {
+    this.logger.log(`Deleting lab report id: ${id} by userId: ${user.id}`);
     const existing = await this.prisma.labReport.findUnique({
       where: { id },
       select: { patient_id: true },
@@ -196,8 +203,10 @@ export class LabReportService {
     }
     await this.assertLabReportAccessByPatientId(user, existing.patient_id);
 
-    return this.prisma.labReport.delete({
+    const result = this.prisma.labReport.delete({
       where: { id },
     });
+    this.logger.log(`Lab report deleted – id: ${id}`);
+    return result;
   }
 }

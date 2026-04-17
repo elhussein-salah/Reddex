@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
@@ -18,6 +19,8 @@ import * as argon2 from 'argon2';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
@@ -28,8 +31,11 @@ export class AuthService {
   ) {}
 
   async login(dto: LoginDto): Promise<ApiResponse> {
+    this.logger.log(`Login attempt for email: ${dto.email}`);
+
     const user = await this.userService.findByEmail(dto.email);
     if (!user) {
+      this.logger.warn(`Login failed – user not found: ${dto.email}`);
       throw new UnauthorizedException('Invalid credentials');
     }
     const isPasswordValid = await this.userService.verifyPassword(
@@ -37,28 +43,38 @@ export class AuthService {
       dto.password,
     );
     if (!isPasswordValid) {
+      this.logger.warn(`Login failed – invalid password for: ${dto.email}`);
       throw new UnauthorizedException('Invalid credentials');
     }
     if (user.isActive === false) {
+      this.logger.warn(`Login failed – inactive account: ${dto.email}`);
       throw new UnauthorizedException('User is not active');
     }
     const payload = { sub: user.id, username: user.email, role: user.role };
+
+    this.logger.log(`Login successful for userId: ${user.id}`);
+
     return {
       data: { token: await this.jwtService.signAsync(payload) },
       message: 'Login successful',
       statusCode: 200,
     };
   }
+
   async patientRegister(
     dto: CreatePatientDto,
     file?: Express.Multer.File,
   ): Promise<ApiResponse> {
+    this.logger.log(`Patient registration attempt for email: ${dto.email}`);
+
     const patient = await this.patientsService.createPatient(dto, file);
     const payload = {
       sub: patient.user.id,
       username: patient.user.email,
       role: patient.user.role,
     };
+
+    this.logger.log(`Patient registered successfully – userId: ${patient.user.id}`);
 
     return {
       data: {
@@ -78,12 +94,16 @@ export class AuthService {
       idCardPhotoUrl?: Express.Multer.File[];
     },
   ): Promise<ApiResponse> {
+    this.logger.log(`Doctor registration attempt for email: ${dto.email}`);
+
     const doctor = await this.doctorService.createDoctor(dto, files);
     const payload = {
       sub: doctor.user.id,
       username: doctor.user.email,
       role: doctor.user.role,
     };
+
+    this.logger.log(`Doctor registered successfully – userId: ${doctor.user.id}`);
 
     return {
       data: {
@@ -98,9 +118,12 @@ export class AuthService {
   async forgotPassword(emailInput: string): Promise<ApiResponse> {
     const email = emailInput.trim().toLowerCase();
 
+    this.logger.log(`Forgot password request for: ${email}`);
+
     const user = await this.userService.findByEmail(email);
     if (!user) {
       // Security best practice: return same response even if user not found
+      this.logger.debug(`Forgot password – no account found for: ${email}`);
       return {
         message: 'If an account exists with this email, an OTP has been sent.',
         statusCode: 200,
@@ -124,8 +147,15 @@ export class AuthService {
       },
     });
 
-    // Send via MailService
-    await this.mailService.sendPasswordResetOtp(email, otp);
+    try {
+      // Send via MailService
+      await this.mailService.sendPasswordResetOtp(email, otp);
+      this.logger.log(`OTP sent successfully to: ${email}`);
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Failed to send OTP email to: ${email}`, err.stack);
+      throw error;
+    }
 
     return {
       message: 'If an account exists with this email, an OTP has been sent.',
@@ -140,12 +170,15 @@ export class AuthService {
   ): Promise<ApiResponse> {
     const email = emailInput.trim().toLowerCase();
 
+    this.logger.log(`Password reset attempt for: ${email}`);
+
     const otpRecord = await this.prisma.passwordResetOtp.findFirst({
       where: { email },
       orderBy: { createdAt: 'desc' },
     });
 
     if (!otpRecord) {
+      this.logger.warn(`Reset failed – no OTP record for: ${email}`);
       throw new BadRequestException('Invalid or expired OTP');
     }
 
@@ -153,6 +186,7 @@ export class AuthService {
       await this.prisma.passwordResetOtp.delete({
         where: { id: otpRecord.id },
       });
+      this.logger.warn(`Reset failed – expired OTP for: ${email}`);
       throw new BadRequestException('OTP has expired');
     }
 
@@ -160,6 +194,7 @@ export class AuthService {
       await this.prisma.passwordResetOtp.delete({
         where: { id: otpRecord.id },
       });
+      this.logger.warn(`Reset failed – max attempts exceeded for: ${email}`);
       throw new BadRequestException(
         'Too many failed attempts. Please request a new OTP.',
       );
@@ -170,6 +205,7 @@ export class AuthService {
         where: { id: otpRecord.id },
         data: { attempts: { increment: 1 } },
       });
+      this.logger.warn(`Reset failed – invalid OTP for: ${email} (attempt ${otpRecord.attempts + 1})`);
       throw new BadRequestException('Invalid OTP');
     }
 
@@ -186,6 +222,8 @@ export class AuthService {
 
     // Clean up
     await this.prisma.passwordResetOtp.delete({ where: { id: otpRecord.id } });
+
+    this.logger.log(`Password reset successful for userId: ${user.id}`);
 
     return {
       message: 'Password reset successfully',

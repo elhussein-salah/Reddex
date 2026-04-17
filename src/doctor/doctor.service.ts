@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { Role } from 'src/generated/prisma/enums';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -40,6 +40,8 @@ type DoctorWithUser = Prisma.doctorsGetPayload<{
 
 @Injectable()
 export class DoctorService {
+  private readonly logger = new Logger(DoctorService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly cloudinary: CloudinaryService,
@@ -53,6 +55,7 @@ export class DoctorService {
       idCardPhotoUrl?: Express.Multer.File[];
     },
   ): Promise<DoctorWithUser> {
+    this.logger.log(`Creating doctor for email: ${dto.email}`);
     const hashedPassword = await argon2.hash(dto.password);
 
     let uploadedProfileImage: { publicId: string; url: string } | null = null;
@@ -104,6 +107,8 @@ export class DoctorService {
         select: DOCTOR_SELECT,
       });
     } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Doctor creation failed for email: ${dto.email}`, err.stack);
       await this.rollbackImageUpload(uploadedProfileImage);
       await this.rollbackImageUpload(uploadedLicenseImage);
       await this.rollbackImageUpload(uploadedIdCardImage);
@@ -128,8 +133,9 @@ export class DoctorService {
     if (!image) return;
     try {
       await this.cloudinary.deleteFile(image.publicId);
-    } catch {
-      // Ignore rollback errors so the original failure is preserved.
+    } catch (rollbackErr: unknown) {
+      const err = rollbackErr instanceof Error ? rollbackErr : new Error(String(rollbackErr));
+      this.logger.error(`Image rollback failed for publicId: ${image.publicId}`, err.stack);
     }
   }
 }

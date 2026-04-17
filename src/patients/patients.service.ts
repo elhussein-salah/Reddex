@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import * as argon2 from 'argon2';
@@ -42,6 +43,8 @@ type PatientWithUser = Prisma.patientsGetPayload<{
 
 @Injectable()
 export class PatientsService {
+  private readonly logger = new Logger(PatientsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly cloudinary: CloudinaryService,
@@ -51,6 +54,7 @@ export class PatientsService {
     dto: CreatePatientDto,
     file?: Express.Multer.File,
   ): Promise<PatientWithUser> {
+    this.logger.log(`Creating patient for email: ${dto.email}`);
     const hashedPassword = await argon2.hash(dto.password);
     let uploadedImage: { publicId: string; url: string } | null = null;
 
@@ -82,6 +86,8 @@ export class PatientsService {
         select: PATIENT_SELECT,
       });
     } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logger.error(`Patient creation failed for email: ${dto.email}`, err.stack);
       await this.rollbackImageUpload(uploadedImage);
       this.handleUniqueConstraintError(error);
       throw error;
@@ -172,6 +178,7 @@ export class PatientsService {
   }
 
   async deletePatient(id: number): Promise<ApiResponse> {
+    this.logger.log(`Deleting patient id: ${id}`);
     const patient = await this.prisma.patients.findUnique({
       where: { id },
       select: { userId: true },
@@ -185,6 +192,8 @@ export class PatientsService {
       this.prisma.patients.delete({ where: { id } }),
       this.prisma.users.delete({ where: { id: patient.userId } }),
     ]);
+
+    this.logger.log(`Patient deleted successfully – id: ${id}`);
 
     return {
       message: 'Patient deleted successfully',
@@ -214,8 +223,9 @@ export class PatientsService {
 
     try {
       await this.cloudinary.deleteFile(image.publicId);
-    } catch {
-      // Ignore rollback errors so the original failure is preserved.
+    } catch (rollbackErr: unknown) {
+      const err = rollbackErr instanceof Error ? rollbackErr : new Error(String(rollbackErr));
+      this.logger.error(`Image rollback failed`, err.stack);
     }
   }
 }
