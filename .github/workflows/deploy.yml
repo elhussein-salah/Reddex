@@ -33,7 +33,7 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
             echo "🟢 Use Node 20"
-            nvm use 20
+            nvm use 20 
 
             echo "🔍 Node version:"
             node -v

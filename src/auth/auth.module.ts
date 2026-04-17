@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PatientsModule } from 'src/patients/patients.module';
 import { DoctorModule } from 'src/doctor/doctor.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
     PatientsModule,
     DoctorModule,
     PrismaModule,
+    MailModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,

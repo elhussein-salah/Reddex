@@ -130,20 +130,20 @@ export class AuthController {
   @Post('forgot-password')
   @ApiBody({
     type: ForgotPasswordDto,
-    description: 'Phone number for OTP',
+    description: 'Email for OTP',
     required: true,
   })
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(dto);
+    return this.authService.forgotPassword(dto.email);
   }
 
   @Post('reset-password')
   @ApiBody({
     type: ResetPasswordDto,
-    description: 'OTP verification and new password',
+    description: 'Email OTP verification and new password',
     required: true,
   })
   async resetPassword(@Body() dto: ResetPasswordDto) {
-    return this.authService.resetPassword(dto);
+    return this.authService.resetPassword(dto.email, dto.otp, dto.password);
   }
 }

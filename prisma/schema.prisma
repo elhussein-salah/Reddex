@@ -108,3 +108,14 @@ model FollowUp {
 
   @@index([doctorId, patientId])
 }
+
+model PasswordResetOtp {
+  id        Int      @id @default(autoincrement())
+  email     String
+  otp       String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}

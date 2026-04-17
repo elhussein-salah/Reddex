@@ -13,32 +13,20 @@ import { PatientsService } from 'src/patients/patients.service';
 import { CreateDoctorDto } from 'src/doctor/dto/create.doctor.dto';
 import { DoctorService } from 'src/doctor/doctor.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import * as twilio from 'twilio';
+import { MailService } from 'src/mail/mail.service';
 import * as argon2 from 'argon2';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { normalizePhone } from 'src/common/utils/phone.util';
 
 @Injectable()
 export class AuthService {
-  private twilioClient?: twilio.Twilio;
-  // Temporary in-memory OTP store for simplicity. (Map<phone, {otp, expiresAt}>)
-  private otps = new Map<string, { otp: string; expiresAt: number }>();
-
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly patientsService: PatientsService,
     private readonly doctorService: DoctorService,
     private readonly prisma: PrismaService,
-  ) {
-    if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-      this.twilioClient = new twilio.Twilio(
-        process.env.TWILIO_ACCOUNT_SID,
-        process.env.TWILIO_AUTH_TOKEN,
-      );
-    }
-  }
+    private readonly mailService: MailService,
+  ) {}
+
   async login(dto: LoginDto): Promise<ApiResponse> {
     const user = await this.userService.findByEmail(dto.email);
     if (!user) {
@@ -107,84 +95,97 @@ export class AuthService {
     };
   }
 
-  async forgotPassword(dto: ForgotPasswordDto): Promise<ApiResponse> {
-    const normalizedPhone = normalizePhone(dto.phone);
+  async forgotPassword(emailInput: string): Promise<ApiResponse> {
+    const email = emailInput.trim().toLowerCase();
 
-    // We check users by phone because phone is stored on the users table.
-    const user = await this.prisma.users.findUnique({
-      where: { phone: normalizedPhone },
-    });
+    const user = await this.userService.findByEmail(email);
     if (!user) {
-      throw new NotFoundException('User with this phone number not found');
+      // Security best practice: return same response even if user not found
+      return {
+        message: 'If an account exists with this email, an OTP has been sent.',
+        statusCode: 200,
+      };
     }
 
-    // Generate a 6-digit OTP
+    // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes expiration
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    this.otps.set(normalizedPhone, { otp, expiresAt });
+    // Delete existing OTPs for this email
+    await this.prisma.passwordResetOtp.deleteMany({ where: { email } });
 
-    // Send OTP via Twilio
-    if (this.twilioClient && process.env.TWILIO_PHONE_NUMBER) {
-      try {
-        await this.twilioClient.messages.create({
-          body: `Your password reset OTP is ${otp}. It is valid for 5 minutes.`,
-          from: process.env.TWILIO_PHONE_NUMBER,
-          to: normalizedPhone,
-        });
-      } catch (error) {
-        console.error('Twilio Error:', error);
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        throw new BadRequestException(
-          'Failed to send SMS error message: ' + errorMessage,
-        );
-      }
-    } else {
-      console.warn('Twilio credentials not configured. OTP:', otp);
-    }
+    // Save new OTP
+    await this.prisma.passwordResetOtp.create({
+      data: {
+        email,
+        otp,
+        expiresAt,
+        attempts: 0,
+      },
+    });
+
+    // Send via MailService
+    await this.mailService.sendPasswordResetOtp(email, otp);
 
     return {
-      message: 'OTP sent successfully',
+      message: 'If an account exists with this email, an OTP has been sent.',
       statusCode: 200,
     };
   }
 
-  async resetPassword(dto: ResetPasswordDto): Promise<ApiResponse> {
-    const normalizedPhone = normalizePhone(dto.phone);
-    const record = this.otps.get(normalizedPhone);
+  async resetPassword(
+    emailInput: string,
+    otp: string,
+    password: string,
+  ): Promise<ApiResponse> {
+    const email = emailInput.trim().toLowerCase();
 
-    if (!record) {
+    const otpRecord = await this.prisma.passwordResetOtp.findFirst({
+      where: { email },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!otpRecord) {
       throw new BadRequestException('Invalid or expired OTP');
     }
 
-    if (Date.now() > record.expiresAt) {
-      this.otps.delete(normalizedPhone);
+    if (new Date() > otpRecord.expiresAt) {
+      await this.prisma.passwordResetOtp.delete({
+        where: { id: otpRecord.id },
+      });
       throw new BadRequestException('OTP has expired');
     }
 
-    if (record.otp !== dto.otp) {
+    if (otpRecord.attempts >= 5) {
+      await this.prisma.passwordResetOtp.delete({
+        where: { id: otpRecord.id },
+      });
+      throw new BadRequestException(
+        'Too many failed attempts. Please request a new OTP.',
+      );
+    }
+
+    if (otpRecord.otp !== otp) {
+      await this.prisma.passwordResetOtp.update({
+        where: { id: otpRecord.id },
+        data: { attempts: { increment: 1 } },
+      });
       throw new BadRequestException('Invalid OTP');
     }
 
-    const user = await this.prisma.users.findUnique({
-      where: { phone: normalizedPhone },
-    });
-
+    const user = await this.userService.findByEmail(email);
     if (!user) {
-      throw new NotFoundException('User with this phone number not found');
+      throw new NotFoundException('User not found');
     }
 
-    // Hash the new password with argon2
-    const hashedPassword = await argon2.hash(dto.password);
-    // Update the user's password in the database
+    const hashedPassword = await argon2.hash(password);
     await this.prisma.users.update({
       where: { id: user.id },
       data: { password: hashedPassword },
     });
 
-    // Invalidate OTP after success
-    this.otps.delete(normalizedPhone);
+    // Clean up
+    await this.prisma.passwordResetOtp.delete({ where: { id: otpRecord.id } });
 
     return {
       message: 'Password reset successfully',
