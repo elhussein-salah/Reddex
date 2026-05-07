@@ -4,19 +4,18 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['log', 'error', 'warn', 'debug', 'verbose'],
   });
 
-  // Security headers
-  app.use(helmet());
-
-  // CORS — restrict to configured origins (fall back to localhost for dev)
-  const corsOrigins = process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
-    : ['http://localhost:3000'];
-  app.enableCors({ origin: corsOrigins, credentials: true });
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      crossOriginEmbedderPolicy: false,
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Reddex')
@@ -32,11 +31,14 @@ async function bootstrap() {
         description: 'Enter JWT token',
         in: 'header',
       },
-      'JWT-auth', // This name here is important for matching up with @ApiBearerAuth() in your controller
+      'JWT-auth',
     )
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  SwaggerModule.setup('api', app, document);
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -46,10 +48,13 @@ async function bootstrap() {
   );
 
   const port = process.env.PORT ?? 3000;
+
   await app.listen(port);
 
   const logger = new Logger('Bootstrap');
+
   logger.log(`🚀 Reddex API running on port ${port}`);
   logger.log(`📖 Swagger docs available at http://localhost:${port}/api`);
 }
+
 bootstrap();
