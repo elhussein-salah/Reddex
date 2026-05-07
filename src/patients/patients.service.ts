@@ -11,14 +11,15 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePatientDto } from './dto/create.patient.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { UploadFolder } from 'src/enums';
-import { Prisma } from 'src/generated/prisma/client';
 import { normalizePhone } from 'src/common/utils/phone.util';
+import { UpdatePatientDto } from './dto/update.patient.dto';
 
 const PATIENT_SELECT = {
   id: true,
-  birthdate: true,
-  SSN: true,
   healthStatus: true,
+  diseases: true,
+  treatments: true,
+  bloodType: true,
   createdAt: true,
   updatedAt: true,
   userId: true,
@@ -29,6 +30,9 @@ const PATIENT_SELECT = {
       email: true,
       phone: true,
       photourl: true,
+      birthdate: true,
+      SSN: true,
+      gender: true,
       role: true,
       isActive: true,
       createdAt: true,
@@ -36,10 +40,6 @@ const PATIENT_SELECT = {
     },
   },
 } as const;
-
-type PatientWithUser = Prisma.patientsGetPayload<{
-  select: typeof PATIENT_SELECT;
-}>;
 
 @Injectable()
 export class PatientsService {
@@ -50,32 +50,46 @@ export class PatientsService {
     private readonly cloudinary: CloudinaryService,
   ) {}
 
-  async createPatient(
-    dto: CreatePatientDto,
-    file?: Express.Multer.File,
-  ): Promise<PatientWithUser> {
+  async createPatient(dto: CreatePatientDto, file?: Express.Multer.File) {
     this.logger.log(`Creating patient for email: ${dto.email}`);
     const hashedPassword = await argon2.hash(dto.password);
     let uploadedImage: { publicId: string; url: string } | null = null;
-
+    this.logger.log({
+      size: file?.size,
+      mimetype: file?.mimetype,
+      hasBuffer: !!file?.buffer,
+    });
     if (file) {
-      uploadedImage = await this.cloudinary.uploadImage(
-        file,
-        UploadFolder.PATIENT_PROFILE,
-      );
+      try {
+        uploadedImage = await this.cloudinary.uploadImage(
+          file,
+          UploadFolder.PATIENT_PROFILE,
+        );
+      } catch (uploadErr) {
+        // Profile photo is optional — don't block registration if Cloudinary is down/slow
+        const err =
+          uploadErr instanceof Error ? uploadErr : new Error(String(uploadErr));
+        this.logger.warn(
+          `Profile image upload failed for ${dto.email}, proceeding without photo: ${err.message}`,
+        );
+      }
     }
 
     try {
       return await this.prisma.patients.create({
         data: {
-          birthdate: new Date(dto.birthdate),
-          SSN: dto.SSN,
           healthStatus: dto.healthStatus,
+          bloodType: dto.bloodType,
+          diseases: dto.diseases ?? [],
+          treatments: dto.treatments ?? [],
           user: {
             create: {
               name: dto.name,
               email: dto.email,
               phone: normalizePhone(dto.phone),
+              birthdate: new Date(dto.birthdate),
+              SSN: dto.SSN,
+              gender: dto.gender,
               isActive: true,
               password: hashedPassword,
               photourl: uploadedImage?.url ?? null,
@@ -97,104 +111,190 @@ export class PatientsService {
     }
   }
 
-  async getPatients(): Promise<PatientWithUser[]> {
-    return await this.prisma.patients.findMany({ select: PATIENT_SELECT });
+  async getPatients(pagination: {
+    skip: number;
+    take: number;
+    sortBy: string;
+    sortOrder: 'asc' | 'desc';
+  }) {
+    const [data, total] = await Promise.all([
+      this.prisma.patients.findMany({
+        select: PATIENT_SELECT,
+        skip: pagination.skip,
+        take: pagination.take,
+        orderBy: { [pagination.sortBy]: pagination.sortOrder },
+      }),
+      this.prisma.patients.count(),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page: Math.floor(pagination.skip / pagination.take) + 1,
+        limit: pagination.take,
+        totalPages: Math.ceil(total / pagination.take),
+      },
+    };
   }
 
-  async getPatient(id: number): Promise<PatientWithUser> {
-    const patient = await this.prisma.patients.findUnique({
+  async getPatient(id: number) {
+    const user = await this.prisma.users.findUnique({
       where: { id },
-      select: PATIENT_SELECT,
+      select: {
+        id: true,
+        patients: {
+          select: PATIENT_SELECT,
+        },
+      },
     });
 
-    if (!patient) {
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return user;
+  }
+
+  // async updatePatient(id: number, dto: UpdatePatientDto) {
+  //   const existingUser = await this.prisma.users.findUnique({
+  //     where: { id },
+  //     select: {
+  //       id: true,
+  //       patients: { select: { id: true } },
+  //     },
+  //   });
+
+  //   if (!existingUser || !existingUser.patients) {
+  //     throw new NotFoundException(`Patient with ID ${id} not found`);
+  //   }
+
+  //   const userData: Record<string, any> = {};
+  //   const patientData: Record<string, any> = {};
+
+  //   if (dto.birthdate !== undefined)
+  //     userData.birthdate = new Date(dto.birthdate);
+  //   if (dto.gender !== undefined) userData.gender = dto.gender;
+  //   if (dto.SSN !== undefined) userData.SSN = dto.SSN;
+  //   if (dto.name !== undefined) userData.name = dto.name;
+  //   if (dto.email !== undefined) userData.email = dto.email;
+  //   if (dto.phone !== undefined) userData.phone = normalizePhone(dto.phone);
+
+  //   if (dto.healthStatus !== undefined)
+  //     patientData.healthStatus = dto.healthStatus;
+  //   if (dto.bloodType !== undefined) patientData.bloodType = dto.bloodType;
+  //   if (dto.diseases !== undefined) patientData.diseases = dto.diseases;
+
+  //   try {
+  //     await this.prisma.users.update({
+  //       where: { id },
+  //       data: {
+  //         ...userData,
+  //         patients: {
+  //           update: patientData,
+  //         },
+  //       },
+  //       select: {
+  //         id: true,
+  //         patients: { select: PATIENT_SELECT },
+  //       },
+  //     });
+  //   } catch (error: unknown) {
+  //     this.handleUniqueConstraintError(error);
+  //     throw error;
+  //   }
+  // }
+  async updatePatient(id: number, dto: UpdatePatientDto) {
+    const existingUser = await this.prisma.users.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        patients: {
+          select: { id: true },
+        },
+      },
+    });
+
+    if (!existingUser || !existingUser.patients) {
       throw new NotFoundException(`Patient with ID ${id} not found`);
     }
 
-    return patient;
-  }
+    const userData: Record<string, any> = {};
+    const patientData: Record<string, any> = {};
 
-  async updatePatient(
-    id: number,
-    dto: Partial<CreatePatientDto>,
-  ): Promise<PatientWithUser> {
-    const existingPatient = await this.prisma.patients.findUnique({
-      where: { id },
-      select: { userId: true },
-    });
-
-    if (!existingPatient) {
-      throw new NotFoundException(`Patient with ID ${id} not found`);
-    }
-
-    const patientData: {
-      birthdate?: Date;
-      SSN?: string;
-      healthStatus?: string;
-    } = {};
-
+    // User fields
     if (dto.birthdate !== undefined) {
-      patientData.birthdate = new Date(dto.birthdate);
+      userData.birthdate = new Date(dto.birthdate);
     }
-    if (dto.SSN !== undefined) patientData.SSN = dto.SSN;
-    if (dto.healthStatus !== undefined)
+
+    if (dto.gender !== undefined) {
+      userData.gender = dto.gender;
+    }
+
+    if (dto.SSN !== undefined) {
+      userData.SSN = dto.SSN;
+    }
+
+    if (dto.name !== undefined) {
+      userData.name = dto.name;
+    }
+
+    if (dto.email !== undefined) {
+      userData.email = dto.email;
+    }
+
+    if (dto.phone !== undefined) {
+      userData.phone = normalizePhone(dto.phone);
+    }
+
+    // Patient fields
+    if (dto.healthStatus !== undefined) {
       patientData.healthStatus = dto.healthStatus;
+    }
 
-    const userData: {
-      name?: string;
-      email?: string;
-      password?: string;
-    } = {};
+    if (dto.bloodType !== undefined) {
+      patientData.bloodType = dto.bloodType;
+    }
 
-    if (dto.name !== undefined) userData.name = dto.name;
-    if (dto.email !== undefined) userData.email = dto.email;
-    if (dto.password !== undefined) {
-      userData.password = await argon2.hash(dto.password);
+    if (dto.diseases !== undefined) {
+      patientData.diseases = dto.diseases;
+    }
+
+    if (dto.treatments !== undefined) {
+      patientData.treatments = dto.treatments;
     }
 
     try {
-      if (Object.keys(userData).length === 0) {
-        return await this.prisma.patients.update({
-          where: { id },
-          data: patientData,
-          select: PATIENT_SELECT,
-        });
-      }
+      await this.prisma.users.update({
+        where: { id },
+        data: {
+          ...userData,
+          patients: {
+            update: patientData,
+          },
+        },
+      });
 
-      const [, updatedPatient] = await this.prisma.$transaction([
-        this.prisma.users.update({
-          where: { id: existingPatient.userId },
-          data: userData,
-        }),
-        this.prisma.patients.update({
-          where: { id },
-          data: patientData,
-          select: PATIENT_SELECT,
-        }),
-      ]);
-
-      return updatedPatient;
+      return {
+        message: 'Patient updated successfully',
+      };
     } catch (error: unknown) {
       this.handleUniqueConstraintError(error);
       throw error;
     }
   }
-
   async deletePatient(id: number): Promise<ApiResponse> {
     this.logger.log(`Deleting patient id: ${id}`);
-    const patient = await this.prisma.patients.findUnique({
+    const user = await this.prisma.users.findUnique({
       where: { id },
-      select: { userId: true },
+      select: { patients: { select: { id: true } } },
     });
 
-    if (!patient) {
+    if (!user || !user.patients) {
       throw new NotFoundException(`Patient with ID ${id} not found`);
     }
 
-    await this.prisma.$transaction([
-      this.prisma.patients.delete({ where: { id } }),
-      this.prisma.users.delete({ where: { id: patient.userId } }),
-    ]);
+    await this.prisma.patients.delete({ where: { id: user.patients.id } });
 
     this.logger.log(`Patient deleted successfully – id: ${id}`);
 

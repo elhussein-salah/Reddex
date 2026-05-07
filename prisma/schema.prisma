@@ -17,6 +17,7 @@ enum Role {
   DOCTOR
   PATIENT
   ADMIN
+  SUPER_ADMIN
 }
 
 enum FollowUpStatus {
@@ -26,13 +27,33 @@ enum FollowUpStatus {
   CANCELLED
 }
 
+enum FollowUpLifecycleStatus {
+  ACTIVE
+  ENDED
+}
+
+enum PrescriptionStatus {
+  ISSUED
+  FILLED
+  EXPIRED
+  CANCELLED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
 model users {
   id        Int       @id @default(autoincrement())
   email     String    @unique
   password  String
   photourl  String?
   name      String
+  gender    Gender
   phone     String    @unique
+  SSN       String    @unique
+  birthdate DateTime  @db.Date
   role      Role
   isActive  Boolean   @default(false)
   createdAt DateTime  @default(now())
@@ -42,54 +63,52 @@ model users {
 }
 
 model patients {
-  id           Int         @id @default(autoincrement())
-  birthdate    DateTime
-  SSN          String      @unique
+  id           Int      @id @default(autoincrement())
   healthStatus String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  userId       Int         @unique
-  user         users       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  labReports   LabReport[]
-  followUps    FollowUp[]
-}
+  diseases     String[]
+  treatments   String[]
+  bloodType    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-model LabReport {
-  id         Int     @id @default(autoincrement())
-  patient_id Int
-  photo      String?
+  userId Int   @unique
+  user   users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  patient patients    @relation(fields: [patient_id], references: [id], onDelete: Cascade)
-  results LabResult[]
-}
-
-model LabResult {
-  id        Int     @id @default(autoincrement())
-  report_id Int
-  // resultsJson Json?
-  name      String // Hb, RBC, etc
-  value     Float
-  unit      String? // g/dL, %, etc
-
-  report LabReport @relation(fields: [report_id], references: [id], onDelete: Cascade)
+  followUps     FollowUp[]
+  prescriptions Prescription[]
 }
 
 model doctors {
-  id                     Int        @id @default(autoincrement())
+  id                     Int            @id @default(autoincrement())
   specialty              String
-  SSN                    String     @unique
-  licenseMedicalNumber   String     @unique
+  licenseMedicalNumber   String         @unique
   licenseMedicalPhotoUrl String
   yearsExperience        Int
   idCardPhotoUrl         String
-  createdAt              DateTime   @default(now())
-  updatedAt              DateTime   @updatedAt
-  userId                 Int        @unique
-  user                   users      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nameOfClinic           String?
+  locationOfClinic       String?
+  photoOfClinicUrl       String?
+  workingHours           String?
+  workdays               String[]
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  userId                 Int            @unique
+  user                   users          @relation(fields: [userId], references: [id], onDelete: Cascade)
   followUps              FollowUp[]
+  prescriptions          Prescription[]
+}
+
+model labs {
+  id         Int      @id @default(autoincrement())
+  name       String
+  imageUrl   String?
+  workhours  String?
+  workdays   String[]
+  phone      String?
+  location   String?
+  websiteUrl String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model FollowUp {
@@ -98,15 +117,44 @@ model FollowUp {
   patientId Int
   notes     String
 
-  status FollowUpStatus @default(PENDING)
+  status          FollowUpStatus          @default(PENDING)
+  lifecycleStatus FollowUpLifecycleStatus @default(ENDED)
+  endDate         DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  doctor  doctors  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  patient patients @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor        doctors        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient       patients       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  prescriptions Prescription[]
 
   @@index([doctorId, patientId])
+  @@index([patientId, status])
+  @@index([doctorId, status])
+}
+
+model Prescription {
+  id             Int                @id @default(autoincrement())
+  followUpId     Int
+  doctorId       Int
+  patientId      Int
+  medicationName String
+  dosage         String
+  frequency      String
+  duration       String
+  instructions   String?
+  status         PrescriptionStatus @default(ISSUED)
+  issuedAt       DateTime           @default(now())
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  followUp FollowUp @relation(fields: [followUpId], references: [id], onDelete: Cascade)
+  doctor   doctors  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient  patients @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId, patientId])
+  @@index([followUpId, status])
+  @@index([patientId, issuedAt])
 }
 
 model PasswordResetOtp {
@@ -118,4 +166,5 @@ model PasswordResetOtp {
   createdAt DateTime @default(now())
 
   @@index([email])
+  @@index([email, expiresAt])
 }

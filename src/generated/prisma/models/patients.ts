@@ -38,9 +38,8 @@ export type PatientsSumAggregateOutputType = {
 
 export type PatientsMinAggregateOutputType = {
   id: number | null
-  birthdate: Date | null
-  SSN: string | null
   healthStatus: string | null
+  bloodType: string | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: number | null
@@ -48,9 +47,8 @@ export type PatientsMinAggregateOutputType = {
 
 export type PatientsMaxAggregateOutputType = {
   id: number | null
-  birthdate: Date | null
-  SSN: string | null
   healthStatus: string | null
+  bloodType: string | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: number | null
@@ -58,9 +56,10 @@ export type PatientsMaxAggregateOutputType = {
 
 export type PatientsCountAggregateOutputType = {
   id: number
-  birthdate: number
-  SSN: number
   healthStatus: number
+  diseases: number
+  treatments: number
+  bloodType: number
   createdAt: number
   updatedAt: number
   userId: number
@@ -80,9 +79,8 @@ export type PatientsSumAggregateInputType = {
 
 export type PatientsMinAggregateInputType = {
   id?: true
-  birthdate?: true
-  SSN?: true
   healthStatus?: true
+  bloodType?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -90,9 +88,8 @@ export type PatientsMinAggregateInputType = {
 
 export type PatientsMaxAggregateInputType = {
   id?: true
-  birthdate?: true
-  SSN?: true
   healthStatus?: true
+  bloodType?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -100,9 +97,10 @@ export type PatientsMaxAggregateInputType = {
 
 export type PatientsCountAggregateInputType = {
   id?: true
-  birthdate?: true
-  SSN?: true
   healthStatus?: true
+  diseases?: true
+  treatments?: true
+  bloodType?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -197,9 +195,10 @@ export type patientsGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type PatientsGroupByOutputType = {
   id: number
-  birthdate: Date
-  SSN: string
   healthStatus: string
+  diseases: string[]
+  treatments: string[]
+  bloodType: string | null
   createdAt: Date
   updatedAt: Date
   userId: number
@@ -230,51 +229,55 @@ export type patientsWhereInput = {
   OR?: Prisma.patientsWhereInput[]
   NOT?: Prisma.patientsWhereInput | Prisma.patientsWhereInput[]
   id?: Prisma.IntFilter<"patients"> | number
-  birthdate?: Prisma.DateTimeFilter<"patients"> | Date | string
-  SSN?: Prisma.StringFilter<"patients"> | string
   healthStatus?: Prisma.StringFilter<"patients"> | string
+  diseases?: Prisma.StringNullableListFilter<"patients">
+  treatments?: Prisma.StringNullableListFilter<"patients">
+  bloodType?: Prisma.StringNullableFilter<"patients"> | string | null
   createdAt?: Prisma.DateTimeFilter<"patients"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"patients"> | Date | string
   userId?: Prisma.IntFilter<"patients"> | number
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
-  labReports?: Prisma.LabReportListRelationFilter
   followUps?: Prisma.FollowUpListRelationFilter
+  prescriptions?: Prisma.PrescriptionListRelationFilter
 }
 
 export type patientsOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  birthdate?: Prisma.SortOrder
-  SSN?: Prisma.SortOrder
   healthStatus?: Prisma.SortOrder
+  diseases?: Prisma.SortOrder
+  treatments?: Prisma.SortOrder
+  bloodType?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   user?: Prisma.usersOrderByWithRelationInput
-  labReports?: Prisma.LabReportOrderByRelationAggregateInput
   followUps?: Prisma.FollowUpOrderByRelationAggregateInput
+  prescriptions?: Prisma.PrescriptionOrderByRelationAggregateInput
 }
 
 export type patientsWhereUniqueInput = Prisma.AtLeast<{
   id?: number
-  SSN?: string
   userId?: number
   AND?: Prisma.patientsWhereInput | Prisma.patientsWhereInput[]
   OR?: Prisma.patientsWhereInput[]
   NOT?: Prisma.patientsWhereInput | Prisma.patientsWhereInput[]
-  birthdate?: Prisma.DateTimeFilter<"patients"> | Date | string
   healthStatus?: Prisma.StringFilter<"patients"> | string
+  diseases?: Prisma.StringNullableListFilter<"patients">
+  treatments?: Prisma.StringNullableListFilter<"patients">
+  bloodType?: Prisma.StringNullableFilter<"patients"> | string | null
   createdAt?: Prisma.DateTimeFilter<"patients"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"patients"> | Date | string
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.usersWhereInput>
-  labReports?: Prisma.LabReportListRelationFilter
   followUps?: Prisma.FollowUpListRelationFilter
-}, "id" | "SSN" | "userId">
+  prescriptions?: Prisma.PrescriptionListRelationFilter
+}, "id" | "userId">
 
 export type patientsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  birthdate?: Prisma.SortOrder
-  SSN?: Prisma.SortOrder
   healthStatus?: Prisma.SortOrder
+  diseases?: Prisma.SortOrder
+  treatments?: Prisma.SortOrder
+  bloodType?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -290,83 +293,91 @@ export type patientsScalarWhereWithAggregatesInput = {
   OR?: Prisma.patientsScalarWhereWithAggregatesInput[]
   NOT?: Prisma.patientsScalarWhereWithAggregatesInput | Prisma.patientsScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"patients"> | number
-  birthdate?: Prisma.DateTimeWithAggregatesFilter<"patients"> | Date | string
-  SSN?: Prisma.StringWithAggregatesFilter<"patients"> | string
   healthStatus?: Prisma.StringWithAggregatesFilter<"patients"> | string
+  diseases?: Prisma.StringNullableListFilter<"patients">
+  treatments?: Prisma.StringNullableListFilter<"patients">
+  bloodType?: Prisma.StringNullableWithAggregatesFilter<"patients"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"patients"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"patients"> | Date | string
   userId?: Prisma.IntWithAggregatesFilter<"patients"> | number
 }
 
 export type patientsCreateInput = {
-  birthdate: Date | string
-  SSN: string
   healthStatus: string
+  diseases?: Prisma.patientsCreatediseasesInput | string[]
+  treatments?: Prisma.patientsCreatetreatmentsInput | string[]
+  bloodType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.usersCreateNestedOneWithoutPatientsInput
-  labReports?: Prisma.LabReportCreateNestedManyWithoutPatientInput
   followUps?: Prisma.FollowUpCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
 }
 
 export type patientsUncheckedCreateInput = {
   id?: number
-  birthdate: Date | string
-  SSN: string
   healthStatus: string
+  diseases?: Prisma.patientsCreatediseasesInput | string[]
+  treatments?: Prisma.patientsCreatetreatmentsInput | string[]
+  bloodType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: number
-  labReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutPatientInput
   followUps?: Prisma.FollowUpUncheckedCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type patientsUpdateInput = {
-  birthdate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  SSN?: Prisma.StringFieldUpdateOperationsInput | string
   healthStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  diseases?: Prisma.patientsUpdatediseasesInput | string[]
+  treatments?: Prisma.patientsUpdatetreatmentsInput | string[]
+  bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.usersUpdateOneRequiredWithoutPatientsNestedInput
-  labReports?: Prisma.LabReportUpdateManyWithoutPatientNestedInput
   followUps?: Prisma.FollowUpUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
 }
 
 export type patientsUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  birthdate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  SSN?: Prisma.StringFieldUpdateOperationsInput | string
   healthStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  diseases?: Prisma.patientsUpdatediseasesInput | string[]
+  treatments?: Prisma.patientsUpdatetreatmentsInput | string[]
+  bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  labReports?: Prisma.LabReportUncheckedUpdateManyWithoutPatientNestedInput
   followUps?: Prisma.FollowUpUncheckedUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type patientsCreateManyInput = {
   id?: number
-  birthdate: Date | string
-  SSN: string
   healthStatus: string
+  diseases?: Prisma.patientsCreatediseasesInput | string[]
+  treatments?: Prisma.patientsCreatetreatmentsInput | string[]
+  bloodType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: number
 }
 
 export type patientsUpdateManyMutationInput = {
-  birthdate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  SSN?: Prisma.StringFieldUpdateOperationsInput | string
   healthStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  diseases?: Prisma.patientsUpdatediseasesInput | string[]
+  treatments?: Prisma.patientsUpdatetreatmentsInput | string[]
+  bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type patientsUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  birthdate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  SSN?: Prisma.StringFieldUpdateOperationsInput | string
   healthStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  diseases?: Prisma.patientsUpdatediseasesInput | string[]
+  treatments?: Prisma.patientsUpdatetreatmentsInput | string[]
+  bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -377,11 +388,20 @@ export type PatientsNullableScalarRelationFilter = {
   isNot?: Prisma.patientsWhereInput | null
 }
 
+export type StringNullableListFilter<$PrismaModel = never> = {
+  equals?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
+  has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
+  hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
 export type patientsCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  birthdate?: Prisma.SortOrder
-  SSN?: Prisma.SortOrder
   healthStatus?: Prisma.SortOrder
+  diseases?: Prisma.SortOrder
+  treatments?: Prisma.SortOrder
+  bloodType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -394,9 +414,8 @@ export type patientsAvgOrderByAggregateInput = {
 
 export type patientsMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  birthdate?: Prisma.SortOrder
-  SSN?: Prisma.SortOrder
   healthStatus?: Prisma.SortOrder
+  bloodType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -404,9 +423,8 @@ export type patientsMaxOrderByAggregateInput = {
 
 export type patientsMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  birthdate?: Prisma.SortOrder
-  SSN?: Prisma.SortOrder
   healthStatus?: Prisma.SortOrder
+  bloodType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -454,18 +472,22 @@ export type patientsUncheckedUpdateOneWithoutUserNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.patientsUpdateToOneWithWhereWithoutUserInput, Prisma.patientsUpdateWithoutUserInput>, Prisma.patientsUncheckedUpdateWithoutUserInput>
 }
 
-export type patientsCreateNestedOneWithoutLabReportsInput = {
-  create?: Prisma.XOR<Prisma.patientsCreateWithoutLabReportsInput, Prisma.patientsUncheckedCreateWithoutLabReportsInput>
-  connectOrCreate?: Prisma.patientsCreateOrConnectWithoutLabReportsInput
-  connect?: Prisma.patientsWhereUniqueInput
+export type patientsCreatediseasesInput = {
+  set: string[]
 }
 
-export type patientsUpdateOneRequiredWithoutLabReportsNestedInput = {
-  create?: Prisma.XOR<Prisma.patientsCreateWithoutLabReportsInput, Prisma.patientsUncheckedCreateWithoutLabReportsInput>
-  connectOrCreate?: Prisma.patientsCreateOrConnectWithoutLabReportsInput
-  upsert?: Prisma.patientsUpsertWithoutLabReportsInput
-  connect?: Prisma.patientsWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.patientsUpdateToOneWithWhereWithoutLabReportsInput, Prisma.patientsUpdateWithoutLabReportsInput>, Prisma.patientsUncheckedUpdateWithoutLabReportsInput>
+export type patientsCreatetreatmentsInput = {
+  set: string[]
+}
+
+export type patientsUpdatediseasesInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
+export type patientsUpdatetreatmentsInput = {
+  set?: string[]
+  push?: string | string[]
 }
 
 export type patientsCreateNestedOneWithoutFollowUpsInput = {
@@ -482,25 +504,41 @@ export type patientsUpdateOneRequiredWithoutFollowUpsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.patientsUpdateToOneWithWhereWithoutFollowUpsInput, Prisma.patientsUpdateWithoutFollowUpsInput>, Prisma.patientsUncheckedUpdateWithoutFollowUpsInput>
 }
 
+export type patientsCreateNestedOneWithoutPrescriptionsInput = {
+  create?: Prisma.XOR<Prisma.patientsCreateWithoutPrescriptionsInput, Prisma.patientsUncheckedCreateWithoutPrescriptionsInput>
+  connectOrCreate?: Prisma.patientsCreateOrConnectWithoutPrescriptionsInput
+  connect?: Prisma.patientsWhereUniqueInput
+}
+
+export type patientsUpdateOneRequiredWithoutPrescriptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.patientsCreateWithoutPrescriptionsInput, Prisma.patientsUncheckedCreateWithoutPrescriptionsInput>
+  connectOrCreate?: Prisma.patientsCreateOrConnectWithoutPrescriptionsInput
+  upsert?: Prisma.patientsUpsertWithoutPrescriptionsInput
+  connect?: Prisma.patientsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.patientsUpdateToOneWithWhereWithoutPrescriptionsInput, Prisma.patientsUpdateWithoutPrescriptionsInput>, Prisma.patientsUncheckedUpdateWithoutPrescriptionsInput>
+}
+
 export type patientsCreateWithoutUserInput = {
-  birthdate: Date | string
-  SSN: string
   healthStatus: string
+  diseases?: Prisma.patientsCreatediseasesInput | string[]
+  treatments?: Prisma.patientsCreatetreatmentsInput | string[]
+  bloodType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  labReports?: Prisma.LabReportCreateNestedManyWithoutPatientInput
   followUps?: Prisma.FollowUpCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
 }
 
 export type patientsUncheckedCreateWithoutUserInput = {
   id?: number
-  birthdate: Date | string
-  SSN: string
   healthStatus: string
+  diseases?: Prisma.patientsCreatediseasesInput | string[]
+  treatments?: Prisma.patientsCreatetreatmentsInput | string[]
+  bloodType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  labReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutPatientInput
   followUps?: Prisma.FollowUpUncheckedCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type patientsCreateOrConnectWithoutUserInput = {
@@ -520,103 +558,49 @@ export type patientsUpdateToOneWithWhereWithoutUserInput = {
 }
 
 export type patientsUpdateWithoutUserInput = {
-  birthdate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  SSN?: Prisma.StringFieldUpdateOperationsInput | string
   healthStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  diseases?: Prisma.patientsUpdatediseasesInput | string[]
+  treatments?: Prisma.patientsUpdatetreatmentsInput | string[]
+  bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  labReports?: Prisma.LabReportUpdateManyWithoutPatientNestedInput
   followUps?: Prisma.FollowUpUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
 }
 
 export type patientsUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  birthdate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  SSN?: Prisma.StringFieldUpdateOperationsInput | string
   healthStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  diseases?: Prisma.patientsUpdatediseasesInput | string[]
+  treatments?: Prisma.patientsUpdatetreatmentsInput | string[]
+  bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  labReports?: Prisma.LabReportUncheckedUpdateManyWithoutPatientNestedInput
   followUps?: Prisma.FollowUpUncheckedUpdateManyWithoutPatientNestedInput
-}
-
-export type patientsCreateWithoutLabReportsInput = {
-  birthdate: Date | string
-  SSN: string
-  healthStatus: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  user: Prisma.usersCreateNestedOneWithoutPatientsInput
-  followUps?: Prisma.FollowUpCreateNestedManyWithoutPatientInput
-}
-
-export type patientsUncheckedCreateWithoutLabReportsInput = {
-  id?: number
-  birthdate: Date | string
-  SSN: string
-  healthStatus: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  userId: number
-  followUps?: Prisma.FollowUpUncheckedCreateNestedManyWithoutPatientInput
-}
-
-export type patientsCreateOrConnectWithoutLabReportsInput = {
-  where: Prisma.patientsWhereUniqueInput
-  create: Prisma.XOR<Prisma.patientsCreateWithoutLabReportsInput, Prisma.patientsUncheckedCreateWithoutLabReportsInput>
-}
-
-export type patientsUpsertWithoutLabReportsInput = {
-  update: Prisma.XOR<Prisma.patientsUpdateWithoutLabReportsInput, Prisma.patientsUncheckedUpdateWithoutLabReportsInput>
-  create: Prisma.XOR<Prisma.patientsCreateWithoutLabReportsInput, Prisma.patientsUncheckedCreateWithoutLabReportsInput>
-  where?: Prisma.patientsWhereInput
-}
-
-export type patientsUpdateToOneWithWhereWithoutLabReportsInput = {
-  where?: Prisma.patientsWhereInput
-  data: Prisma.XOR<Prisma.patientsUpdateWithoutLabReportsInput, Prisma.patientsUncheckedUpdateWithoutLabReportsInput>
-}
-
-export type patientsUpdateWithoutLabReportsInput = {
-  birthdate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  SSN?: Prisma.StringFieldUpdateOperationsInput | string
-  healthStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.usersUpdateOneRequiredWithoutPatientsNestedInput
-  followUps?: Prisma.FollowUpUpdateManyWithoutPatientNestedInput
-}
-
-export type patientsUncheckedUpdateWithoutLabReportsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  birthdate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  SSN?: Prisma.StringFieldUpdateOperationsInput | string
-  healthStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
-  followUps?: Prisma.FollowUpUncheckedUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 export type patientsCreateWithoutFollowUpsInput = {
-  birthdate: Date | string
-  SSN: string
   healthStatus: string
+  diseases?: Prisma.patientsCreatediseasesInput | string[]
+  treatments?: Prisma.patientsCreatetreatmentsInput | string[]
+  bloodType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.usersCreateNestedOneWithoutPatientsInput
-  labReports?: Prisma.LabReportCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
 }
 
 export type patientsUncheckedCreateWithoutFollowUpsInput = {
   id?: number
-  birthdate: Date | string
-  SSN: string
   healthStatus: string
+  diseases?: Prisma.patientsCreatediseasesInput | string[]
+  treatments?: Prisma.patientsCreatetreatmentsInput | string[]
+  bloodType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: number
-  labReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
 }
 
 export type patientsCreateOrConnectWithoutFollowUpsInput = {
@@ -636,24 +620,88 @@ export type patientsUpdateToOneWithWhereWithoutFollowUpsInput = {
 }
 
 export type patientsUpdateWithoutFollowUpsInput = {
-  birthdate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  SSN?: Prisma.StringFieldUpdateOperationsInput | string
   healthStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  diseases?: Prisma.patientsUpdatediseasesInput | string[]
+  treatments?: Prisma.patientsUpdatetreatmentsInput | string[]
+  bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.usersUpdateOneRequiredWithoutPatientsNestedInput
-  labReports?: Prisma.LabReportUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
 }
 
 export type patientsUncheckedUpdateWithoutFollowUpsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  birthdate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  SSN?: Prisma.StringFieldUpdateOperationsInput | string
   healthStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  diseases?: Prisma.patientsUpdatediseasesInput | string[]
+  treatments?: Prisma.patientsUpdatetreatmentsInput | string[]
+  bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.IntFieldUpdateOperationsInput | number
-  labReports?: Prisma.LabReportUncheckedUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+}
+
+export type patientsCreateWithoutPrescriptionsInput = {
+  healthStatus: string
+  diseases?: Prisma.patientsCreatediseasesInput | string[]
+  treatments?: Prisma.patientsCreatetreatmentsInput | string[]
+  bloodType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.usersCreateNestedOneWithoutPatientsInput
+  followUps?: Prisma.FollowUpCreateNestedManyWithoutPatientInput
+}
+
+export type patientsUncheckedCreateWithoutPrescriptionsInput = {
+  id?: number
+  healthStatus: string
+  diseases?: Prisma.patientsCreatediseasesInput | string[]
+  treatments?: Prisma.patientsCreatetreatmentsInput | string[]
+  bloodType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId: number
+  followUps?: Prisma.FollowUpUncheckedCreateNestedManyWithoutPatientInput
+}
+
+export type patientsCreateOrConnectWithoutPrescriptionsInput = {
+  where: Prisma.patientsWhereUniqueInput
+  create: Prisma.XOR<Prisma.patientsCreateWithoutPrescriptionsInput, Prisma.patientsUncheckedCreateWithoutPrescriptionsInput>
+}
+
+export type patientsUpsertWithoutPrescriptionsInput = {
+  update: Prisma.XOR<Prisma.patientsUpdateWithoutPrescriptionsInput, Prisma.patientsUncheckedUpdateWithoutPrescriptionsInput>
+  create: Prisma.XOR<Prisma.patientsCreateWithoutPrescriptionsInput, Prisma.patientsUncheckedCreateWithoutPrescriptionsInput>
+  where?: Prisma.patientsWhereInput
+}
+
+export type patientsUpdateToOneWithWhereWithoutPrescriptionsInput = {
+  where?: Prisma.patientsWhereInput
+  data: Prisma.XOR<Prisma.patientsUpdateWithoutPrescriptionsInput, Prisma.patientsUncheckedUpdateWithoutPrescriptionsInput>
+}
+
+export type patientsUpdateWithoutPrescriptionsInput = {
+  healthStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  diseases?: Prisma.patientsUpdatediseasesInput | string[]
+  treatments?: Prisma.patientsUpdatetreatmentsInput | string[]
+  bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.usersUpdateOneRequiredWithoutPatientsNestedInput
+  followUps?: Prisma.FollowUpUpdateManyWithoutPatientNestedInput
+}
+
+export type patientsUncheckedUpdateWithoutPrescriptionsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  healthStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  diseases?: Prisma.patientsUpdatediseasesInput | string[]
+  treatments?: Prisma.patientsUpdatetreatmentsInput | string[]
+  bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  followUps?: Prisma.FollowUpUncheckedUpdateManyWithoutPatientNestedInput
 }
 
 
@@ -662,13 +710,13 @@ export type patientsUncheckedUpdateWithoutFollowUpsInput = {
  */
 
 export type PatientsCountOutputType = {
-  labReports: number
   followUps: number
+  prescriptions: number
 }
 
 export type PatientsCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  labReports?: boolean | PatientsCountOutputTypeCountLabReportsArgs
   followUps?: boolean | PatientsCountOutputTypeCountFollowUpsArgs
+  prescriptions?: boolean | PatientsCountOutputTypeCountPrescriptionsArgs
 }
 
 /**
@@ -684,37 +732,39 @@ export type PatientsCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
 /**
  * PatientsCountOutputType without action
  */
-export type PatientsCountOutputTypeCountLabReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.LabReportWhereInput
+export type PatientsCountOutputTypeCountFollowUpsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FollowUpWhereInput
 }
 
 /**
  * PatientsCountOutputType without action
  */
-export type PatientsCountOutputTypeCountFollowUpsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.FollowUpWhereInput
+export type PatientsCountOutputTypeCountPrescriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PrescriptionWhereInput
 }
 
 
 export type patientsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  birthdate?: boolean
-  SSN?: boolean
   healthStatus?: boolean
+  diseases?: boolean
+  treatments?: boolean
+  bloodType?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
   user?: boolean | Prisma.usersDefaultArgs<ExtArgs>
-  labReports?: boolean | Prisma.patients$labReportsArgs<ExtArgs>
   followUps?: boolean | Prisma.patients$followUpsArgs<ExtArgs>
+  prescriptions?: boolean | Prisma.patients$prescriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.PatientsCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["patients"]>
 
 export type patientsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  birthdate?: boolean
-  SSN?: boolean
   healthStatus?: boolean
+  diseases?: boolean
+  treatments?: boolean
+  bloodType?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -723,9 +773,10 @@ export type patientsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
 
 export type patientsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  birthdate?: boolean
-  SSN?: boolean
   healthStatus?: boolean
+  diseases?: boolean
+  treatments?: boolean
+  bloodType?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -734,19 +785,20 @@ export type patientsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 
 export type patientsSelectScalar = {
   id?: boolean
-  birthdate?: boolean
-  SSN?: boolean
   healthStatus?: boolean
+  diseases?: boolean
+  treatments?: boolean
+  bloodType?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
 }
 
-export type patientsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "birthdate" | "SSN" | "healthStatus" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["patients"]>
+export type patientsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "healthStatus" | "diseases" | "treatments" | "bloodType" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["patients"]>
 export type patientsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.usersDefaultArgs<ExtArgs>
-  labReports?: boolean | Prisma.patients$labReportsArgs<ExtArgs>
   followUps?: boolean | Prisma.patients$followUpsArgs<ExtArgs>
+  prescriptions?: boolean | Prisma.patients$prescriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.PatientsCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type patientsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -760,14 +812,15 @@ export type $patientsPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   name: "patients"
   objects: {
     user: Prisma.$usersPayload<ExtArgs>
-    labReports: Prisma.$LabReportPayload<ExtArgs>[]
     followUps: Prisma.$FollowUpPayload<ExtArgs>[]
+    prescriptions: Prisma.$PrescriptionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    birthdate: Date
-    SSN: string
     healthStatus: string
+    diseases: string[]
+    treatments: string[]
+    bloodType: string | null
     createdAt: Date
     updatedAt: Date
     userId: number
@@ -1166,8 +1219,8 @@ readonly fields: patientsFieldRefs;
 export interface Prisma__patientsClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.usersDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.usersDefaultArgs<ExtArgs>>): Prisma.Prisma__usersClient<runtime.Types.Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  labReports<T extends Prisma.patients$labReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.patients$labReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   followUps<T extends Prisma.patients$followUpsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.patients$followUpsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FollowUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  prescriptions<T extends Prisma.patients$prescriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.patients$prescriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrescriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1198,9 +1251,10 @@ export interface Prisma__patientsClient<T, Null = never, ExtArgs extends runtime
  */
 export interface patientsFieldRefs {
   readonly id: Prisma.FieldRef<"patients", 'Int'>
-  readonly birthdate: Prisma.FieldRef<"patients", 'DateTime'>
-  readonly SSN: Prisma.FieldRef<"patients", 'String'>
   readonly healthStatus: Prisma.FieldRef<"patients", 'String'>
+  readonly diseases: Prisma.FieldRef<"patients", 'String[]'>
+  readonly treatments: Prisma.FieldRef<"patients", 'String[]'>
+  readonly bloodType: Prisma.FieldRef<"patients", 'String'>
   readonly createdAt: Prisma.FieldRef<"patients", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"patients", 'DateTime'>
   readonly userId: Prisma.FieldRef<"patients", 'Int'>
@@ -1605,30 +1659,6 @@ export type patientsDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * patients.labReports
- */
-export type patients$labReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the LabReport
-   */
-  select?: Prisma.LabReportSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the LabReport
-   */
-  omit?: Prisma.LabReportOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.LabReportInclude<ExtArgs> | null
-  where?: Prisma.LabReportWhereInput
-  orderBy?: Prisma.LabReportOrderByWithRelationInput | Prisma.LabReportOrderByWithRelationInput[]
-  cursor?: Prisma.LabReportWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.LabReportScalarFieldEnum | Prisma.LabReportScalarFieldEnum[]
-}
-
-/**
  * patients.followUps
  */
 export type patients$followUpsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1650,6 +1680,30 @@ export type patients$followUpsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.FollowUpScalarFieldEnum | Prisma.FollowUpScalarFieldEnum[]
+}
+
+/**
+ * patients.prescriptions
+ */
+export type patients$prescriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Prescription
+   */
+  select?: Prisma.PrescriptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Prescription
+   */
+  omit?: Prisma.PrescriptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PrescriptionInclude<ExtArgs> | null
+  where?: Prisma.PrescriptionWhereInput
+  orderBy?: Prisma.PrescriptionOrderByWithRelationInput | Prisma.PrescriptionOrderByWithRelationInput[]
+  cursor?: Prisma.PrescriptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PrescriptionScalarFieldEnum | Prisma.PrescriptionScalarFieldEnum[]
 }
 
 /**

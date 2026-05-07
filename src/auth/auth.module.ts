@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { OtpCleanupService } from './otp-cleanup.service';
 import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -19,11 +20,19 @@ import { MailModule } from 'src/mail/mail.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.getOrThrow<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1h' },
+        signOptions: {
+          expiresIn: '168h',
+          issuer: 'reddex-api',
+          audience: 'reddex-client',
+        },
+        verifyOptions: {
+          issuer: 'reddex-api',
+          audience: 'reddex-client',
+        },
       }),
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, OtpCleanupService],
 })
 export class AuthModule {}

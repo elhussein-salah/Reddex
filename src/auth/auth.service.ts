@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
+import { randomInt } from 'crypto';
 import { ApiResponse } from 'src/common/interfaces';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -94,6 +95,7 @@ export class AuthService {
       profilePicture?: Express.Multer.File[];
       licenseMedicalPhotoUrl?: Express.Multer.File[];
       idCardPhotoUrl?: Express.Multer.File[];
+      photoOfClinicUrl?: Express.Multer.File[];
     },
   ): Promise<ApiResponse> {
     this.logger.log(`Doctor registration attempt for email: ${dto.email}`);
@@ -124,9 +126,11 @@ export class AuthService {
 
     this.logger.log(`Forgot password request for: ${email}`);
 
-    const user = await this.userService.findByEmail(email);
+    const user = await this.userService.findByEmailOrNull(email);
     if (!user) {
-      // Security best practice: return same response even if user not found
+      // Burn roughly the same CPU time as the real path to prevent
+      // timing-based user enumeration.
+      await argon2.hash('dummy-password-to-normalize-timing');
       this.logger.debug(`Forgot password – no account found for: ${email}`);
       return {
         message: 'If an account exists with this email, an OTP has been sent.',
@@ -135,7 +139,7 @@ export class AuthService {
     }
 
     // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = randomInt(100000, 1000000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     // Hash OTP before storing (same as passwords — never store plaintext)

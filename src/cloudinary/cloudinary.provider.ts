@@ -16,6 +16,7 @@ export const CloudinaryProvider = {
       cloud_name: cloudName,
       api_key: apiKey,
       api_secret: apiSecret,
+      timeout: 10000,
     });
     return cloudinary;
   },

@@ -50,25 +50,25 @@ export type users = Prisma.usersModel
  */
 export type patients = Prisma.patientsModel
 /**
- * Model LabReport
- * 
- */
-export type LabReport = Prisma.LabReportModel
-/**
- * Model LabResult
- * 
- */
-export type LabResult = Prisma.LabResultModel
-/**
  * Model doctors
  * 
  */
 export type doctors = Prisma.doctorsModel
 /**
+ * Model labs
+ * 
+ */
+export type labs = Prisma.labsModel
+/**
  * Model FollowUp
  * 
  */
 export type FollowUp = Prisma.FollowUpModel
+/**
+ * Model Prescription
+ * 
+ */
+export type Prescription = Prisma.PrescriptionModel
 /**
  * Model PasswordResetOtp
  * 

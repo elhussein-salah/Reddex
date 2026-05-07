@@ -10,9 +10,9 @@
  */
 export type * from './models/users.js'
 export type * from './models/patients.js'
-export type * from './models/LabReport.js'
-export type * from './models/LabResult.js'
 export type * from './models/doctors.js'
+export type * from './models/labs.js'
 export type * from './models/FollowUp.js'
+export type * from './models/Prescription.js'
 export type * from './models/PasswordResetOtp.js'
 export type * from './commonInputTypes.js'

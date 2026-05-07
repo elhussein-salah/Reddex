@@ -15,7 +15,7 @@ export class CloudinaryService {
 
   private readonly allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
-  private readonly maxSize = 5 * 1024 * 1024;
+  private readonly maxSize = 10 * 1024 * 1024;
 
   constructor(
     @Inject('CLOUDINARY') private cloudinary: typeof CloudinaryType,

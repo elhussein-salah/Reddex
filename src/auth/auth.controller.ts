@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { LoginDto, ForgotPasswordDto, ResetPasswordDto } from './dto';
 import { AuthService } from './auth.service';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatePatientDto } from 'src/patients/dto/create.patient.dto';
 import {
   FileInterceptor,
@@ -19,11 +19,18 @@ import { imageFileFilter } from 'src/common/utils/file-filter.util';
 import { CreateDoctorDto } from 'src/doctor/dto/create.doctor.dto';
 import { Throttle } from '@nestjs/throttler';
 
+@ApiTags('Auth')
 @Throttle({ default: { ttl: 60000, limit: 5 } })
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+
   @Post('login')
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful, returns JWT token',
+  })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
   @ApiBody({
     type: LoginDto,
     description: 'Login credentials',
@@ -34,6 +41,8 @@ export class AuthController {
   }
 
   @Post('register/patient')
+  @ApiResponse({ status: 201, description: 'Patient registered successfully' })
+  @ApiResponse({ status: 409, description: 'Email or SSN already exists' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -45,6 +54,7 @@ export class AuthController {
         'birthdate',
         'SSN',
         'healthStatus',
+        'gender',
       ],
       properties: {
         name: { type: 'string', example: 'John Doe' },
@@ -54,6 +64,18 @@ export class AuthController {
         phone: { type: 'string', example: '+12025550198' },
         SSN: { type: 'string', example: '123-45-6789' },
         healthStatus: { type: 'string', example: 'Stable' },
+        gender: { type: 'string', example: 'MALE' },
+        bloodType: { type: 'string', example: 'O+' },
+        diseases: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['Diabetes'],
+        },
+        treatments: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['Chemotherapy'],
+        },
         profilePicture: {
           type: 'string',
           format: 'binary',
@@ -75,6 +97,11 @@ export class AuthController {
   }
 
   @Post('register/doctor')
+  @ApiResponse({ status: 201, description: 'Doctor registered successfully' })
+  @ApiResponse({
+    status: 409,
+    description: 'Email, SSN, or license already exists',
+  })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -86,6 +113,8 @@ export class AuthController {
         'specialty',
         'phone',
         'SSN',
+        'birthdate',
+        'gender',
         'licenseMedicalNumber',
         'yearsExperience',
       ],
@@ -96,11 +125,22 @@ export class AuthController {
         specialty: { type: 'string', example: 'Cardiology' },
         phone: { type: 'string', example: '+12025550198' },
         SSN: { type: 'string', example: '123-45-6789' },
+        birthdate: { type: 'string', example: '1985-03-20T00:00:00.000Z' },
+        gender: { type: 'string', example: 'FEMALE', enum: ['MALE', 'FEMALE'] },
         licenseMedicalNumber: { type: 'string', example: 'LIC-MED-2026-001' },
         yearsExperience: { type: 'number', example: 10 },
+        nameOfClinic: { type: 'string', example: 'Cairo Heart Clinic' },
+        locationOfClinic: { type: 'string', example: '12 Tahrir St, Cairo' },
+        workingHours: { type: 'string', example: '09:00 - 17:00' },
+        workdays: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['Monday', 'Wednesday', 'Friday'],
+        },
         profilePicture: { type: 'string', format: 'binary' },
         licenseMedicalPhotoUrl: { type: 'string', format: 'binary' },
         idCardPhotoUrl: { type: 'string', format: 'binary' },
+        photoOfClinicUrl: { type: 'string', format: 'binary' },
       },
     },
   })
@@ -110,6 +150,7 @@ export class AuthController {
         { name: 'profilePicture', maxCount: 1 },
         { name: 'licenseMedicalPhotoUrl', maxCount: 1 },
         { name: 'idCardPhotoUrl', maxCount: 1 },
+        { name: 'photoOfClinicUrl', maxCount: 1 },
       ],
       {
         ...multerConfig,
@@ -124,12 +165,14 @@ export class AuthController {
       profilePicture?: Express.Multer.File[];
       licenseMedicalPhotoUrl?: Express.Multer.File[];
       idCardPhotoUrl?: Express.Multer.File[];
+      photoOfClinicUrl?: Express.Multer.File[];
     },
   ) {
     return this.authService.doctorRegister(dto, files);
   }
 
   @Post('forgot-password')
+  @ApiResponse({ status: 200, description: 'OTP sent if account exists' })
   @ApiBody({
     type: ForgotPasswordDto,
     description: 'Email for OTP',
@@ -140,6 +183,8 @@ export class AuthController {
   }
 
   @Post('reset-password')
+  @ApiResponse({ status: 200, description: 'Password reset successful' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired OTP' })
   @ApiBody({
     type: ResetPasswordDto,
     description: 'Email OTP verification and new password',

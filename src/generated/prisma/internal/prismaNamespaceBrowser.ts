@@ -53,10 +53,10 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   users: 'users',
   patients: 'patients',
-  LabReport: 'LabReport',
-  LabResult: 'LabResult',
   doctors: 'doctors',
+  labs: 'labs',
   FollowUp: 'FollowUp',
+  Prescription: 'Prescription',
   PasswordResetOtp: 'PasswordResetOtp'
 } as const
 
@@ -82,7 +82,10 @@ export const UsersScalarFieldEnum = {
   password: 'password',
   photourl: 'photourl',
   name: 'name',
+  gender: 'gender',
   phone: 'phone',
+  SSN: 'SSN',
+  birthdate: 'birthdate',
   role: 'role',
   isActive: 'isActive',
   createdAt: 'createdAt',
@@ -94,9 +97,10 @@ export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof Us
 
 export const PatientsScalarFieldEnum = {
   id: 'id',
-  birthdate: 'birthdate',
-  SSN: 'SSN',
   healthStatus: 'healthStatus',
+  diseases: 'diseases',
+  treatments: 'treatments',
+  bloodType: 'bloodType',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'
@@ -105,36 +109,18 @@ export const PatientsScalarFieldEnum = {
 export type PatientsScalarFieldEnum = (typeof PatientsScalarFieldEnum)[keyof typeof PatientsScalarFieldEnum]
 
 
-export const LabReportScalarFieldEnum = {
-  id: 'id',
-  patient_id: 'patient_id',
-  photo: 'photo',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type LabReportScalarFieldEnum = (typeof LabReportScalarFieldEnum)[keyof typeof LabReportScalarFieldEnum]
-
-
-export const LabResultScalarFieldEnum = {
-  id: 'id',
-  report_id: 'report_id',
-  name: 'name',
-  value: 'value',
-  unit: 'unit'
-} as const
-
-export type LabResultScalarFieldEnum = (typeof LabResultScalarFieldEnum)[keyof typeof LabResultScalarFieldEnum]
-
-
 export const DoctorsScalarFieldEnum = {
   id: 'id',
   specialty: 'specialty',
-  SSN: 'SSN',
   licenseMedicalNumber: 'licenseMedicalNumber',
   licenseMedicalPhotoUrl: 'licenseMedicalPhotoUrl',
   yearsExperience: 'yearsExperience',
   idCardPhotoUrl: 'idCardPhotoUrl',
+  nameOfClinic: 'nameOfClinic',
+  locationOfClinic: 'locationOfClinic',
+  photoOfClinicUrl: 'photoOfClinicUrl',
+  workingHours: 'workingHours',
+  workdays: 'workdays',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'
@@ -143,17 +129,54 @@ export const DoctorsScalarFieldEnum = {
 export type DoctorsScalarFieldEnum = (typeof DoctorsScalarFieldEnum)[keyof typeof DoctorsScalarFieldEnum]
 
 
+export const LabsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  imageUrl: 'imageUrl',
+  workhours: 'workhours',
+  workdays: 'workdays',
+  phone: 'phone',
+  location: 'location',
+  websiteUrl: 'websiteUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabsScalarFieldEnum = (typeof LabsScalarFieldEnum)[keyof typeof LabsScalarFieldEnum]
+
+
 export const FollowUpScalarFieldEnum = {
   id: 'id',
   doctorId: 'doctorId',
   patientId: 'patientId',
   notes: 'notes',
   status: 'status',
+  lifecycleStatus: 'lifecycleStatus',
+  endDate: 'endDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type FollowUpScalarFieldEnum = (typeof FollowUpScalarFieldEnum)[keyof typeof FollowUpScalarFieldEnum]
+
+
+export const PrescriptionScalarFieldEnum = {
+  id: 'id',
+  followUpId: 'followUpId',
+  doctorId: 'doctorId',
+  patientId: 'patientId',
+  medicationName: 'medicationName',
+  dosage: 'dosage',
+  frequency: 'frequency',
+  duration: 'duration',
+  instructions: 'instructions',
+  status: 'status',
+  issuedAt: 'issuedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrescriptionScalarFieldEnum = (typeof PrescriptionScalarFieldEnum)[keyof typeof PrescriptionScalarFieldEnum]
 
 
 export const PasswordResetOtpScalarFieldEnum = {

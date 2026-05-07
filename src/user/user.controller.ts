@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UnauthorizedException,
   UploadedFile,
@@ -22,6 +23,7 @@ import {
   ApiBody,
   ApiOperation,
   ApiBearerAuth,
+  ApiResponse,
 } from '@nestjs/swagger';
 import { imageFileFilter } from '../common/utils/file-filter.util';
 import { multerConfig } from '../common/config/multer.config';
@@ -31,6 +33,7 @@ import { RolesGuard } from 'src/auth/role.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { UploadFolder } from 'src/enums';
 import type { AuthenticatedRequest } from 'src/common/interfaces/AuthenticatedRequest';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-auth')
@@ -43,6 +46,8 @@ export class UserController {
   @Post()
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Create user with optional profile picture' })
+  @ApiResponse({ status: 201, description: 'User created successfully' })
+  @ApiResponse({ status: 409, description: 'Email already in use' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -70,24 +75,29 @@ export class UserController {
     @Body() dto: CreateUserDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.userService.create(
-      dto,
-      Role.PATIENT,
-      UploadFolder.PATIENT_PROFILE,
-      file,
-    );
+    const role = dto.role ?? Role.PATIENT;
+    const folder =
+      role === Role.DOCTOR
+        ? UploadFolder.DOCTOR_PROFILE
+        : role === Role.ADMIN || role === Role.SUPER_ADMIN
+          ? UploadFolder.ADMIN_PROFILE
+          : UploadFolder.PATIENT_PROFILE;
+    return this.userService.create(dto, role, folder, file);
   }
 
   // ================= READ =================
   @Get()
   @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Get all users' })
-  findAll() {
-    return this.userService.findAll();
+  @ApiOperation({ summary: 'Get all users (paginated)' })
+  @ApiResponse({ status: 200, description: 'Paginated user list' })
+  findAll(@Query() pagination: PaginationDto) {
+    return this.userService.findAll(pagination);
   }
 
   @Get('me')
   @ApiOperation({ summary: 'Get current user profile from JWT' })
+  @ApiResponse({ status: 200, description: 'User profile' })
+  @ApiResponse({ status: 401, description: 'Not authenticated' })
   getProfile(@Req() req: AuthenticatedRequest) {
     if (!req.user) {
       throw new UnauthorizedException('not authenticated');
@@ -107,6 +117,8 @@ export class UserController {
   @Get('email/:email')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Get user by email' })
+  @ApiResponse({ status: 200, description: 'User found' })
+  @ApiResponse({ status: 401, description: 'User not found' })
   findByEmail(@Param('email') email: string) {
     return this.userService.findByEmail(email);
   }
@@ -115,6 +127,8 @@ export class UserController {
   @Patch(':id')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Update user' })
+  @ApiResponse({ status: 200, description: 'User updated successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUserDto) {
     return this.userService.update(id, dto);
   }
@@ -123,6 +137,8 @@ export class UserController {
   @Delete(':id')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Delete user' })
+  @ApiResponse({ status: 200, description: 'User deleted successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(id);
   }

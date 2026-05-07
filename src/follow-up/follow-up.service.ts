@@ -8,35 +8,26 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateFollowUpDto } from './dto';
-import { FollowUpStatus } from '../generated/prisma/client';
+import {
+  FollowUpLifecycleStatus,
+  FollowUpStatus,
+} from '../generated/prisma/client';
+import { ProfileLookupService } from '../common/services/profile-lookup.service';
 
 @Injectable()
 export class FollowUpService {
   private readonly logger = new Logger(FollowUpService.name);
 
-  constructor(private prisma: PrismaService) {}
-
-  // Helper method to retrieve the internal patient ID
-  private async getPatientIdByUserId(userId: number): Promise<number> {
-    const patient = await this.prisma.patients.findUnique({
-      where: { userId },
-    });
-    if (!patient) throw new NotFoundException('Patient profile not found.');
-    return patient.id;
-  }
-
-  // Helper method to retrieve the internal doctor ID
-  private async getDoctorIdByUserId(userId: number): Promise<number> {
-    const doctor = await this.prisma.doctors.findUnique({ where: { userId } });
-    if (!doctor) throw new NotFoundException('Doctor profile not found.');
-    return doctor.id;
-  }
+  constructor(
+    private prisma: PrismaService,
+    private readonly profileLookup: ProfileLookupService,
+  ) {}
 
   async createRequest(userId: number, dto: CreateFollowUpDto) {
     this.logger.log(
       `Follow-up request from userId: ${userId} to doctorId: ${dto.doctorId}`,
     );
-    const patientId = await this.getPatientIdByUserId(userId);
+    const patientId = await this.profileLookup.getPatientIdByUserId(userId);
 
     // Prevent multiple PENDING requests for the same doctor
     const existingPending = await this.prisma.followUp.findFirst({
@@ -62,28 +53,56 @@ export class FollowUpService {
         doctorId: dto.doctorId,
         notes: dto.notes,
         status: FollowUpStatus.PENDING,
+        lifecycleStatus: FollowUpLifecycleStatus.ENDED,
+        endDate: null,
       },
     });
     this.logger.log(`Follow-up created – id: ${followUp.id}`);
     return followUp;
   }
 
-  async getDoctorPendingRequests(userId: number) {
-    const doctorId = await this.getDoctorIdByUserId(userId);
+  async getDoctorPendingRequests(
+    userId: number,
+    pagination: {
+      skip: number;
+      take: number;
+      sortBy: string;
+      sortOrder: 'asc' | 'desc';
+    },
+  ) {
+    const doctorId = await this.profileLookup.getDoctorIdByUserId(userId);
 
-    return this.prisma.followUp.findMany({
-      where: {
-        doctorId,
-        status: FollowUpStatus.PENDING,
-      },
-      include: {
-        patient: {
-          include: {
-            user: { select: { name: true, email: true, phone: true } },
+    const where = {
+      doctorId,
+      status: FollowUpStatus.PENDING,
+    };
+
+    const [data, total] = await Promise.all([
+      this.prisma.followUp.findMany({
+        where,
+        include: {
+          patient: {
+            include: {
+              user: { select: { name: true, email: true, phone: true } },
+            },
           },
         },
+        skip: pagination.skip,
+        take: pagination.take,
+        orderBy: { [pagination.sortBy]: pagination.sortOrder },
+      }),
+      this.prisma.followUp.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page: Math.floor(pagination.skip / pagination.take) + 1,
+        limit: pagination.take,
+        totalPages: Math.ceil(total / pagination.take),
       },
-    });
+    };
   }
 
   async respondToRequest(
@@ -94,7 +113,7 @@ export class FollowUpService {
     this.logger.log(
       `Doctor userId: ${userId} responding to followUpId: ${followUpId} with status: ${status}`,
     );
-    const doctorId = await this.getDoctorIdByUserId(userId);
+    const doctorId = await this.profileLookup.getDoctorIdByUserId(userId);
     const followUp = await this.prisma.followUp.findUnique({
       where: { id: followUpId },
     });
@@ -120,7 +139,14 @@ export class FollowUpService {
 
     const updated = await this.prisma.followUp.update({
       where: { id: followUpId },
-      data: { status },
+      data: {
+        status,
+        lifecycleStatus:
+          status === FollowUpStatus.ACCEPTED
+            ? FollowUpLifecycleStatus.ACTIVE
+            : FollowUpLifecycleStatus.ENDED,
+        endDate: status === FollowUpStatus.ACCEPTED ? null : new Date(),
+      },
     });
     this.logger.log(`Follow-up ${followUpId} updated to: ${status}`);
     return updated;
@@ -130,7 +156,7 @@ export class FollowUpService {
     this.logger.log(
       `Patient userId: ${userId} cancelling followUpId: ${followUpId}`,
     );
-    const patientId = await this.getPatientIdByUserId(userId);
+    const patientId = await this.profileLookup.getPatientIdByUserId(userId);
     const followUp = await this.prisma.followUp.findUnique({
       where: { id: followUpId },
     });
@@ -156,7 +182,11 @@ export class FollowUpService {
 
     const updated = await this.prisma.followUp.update({
       where: { id: followUpId },
-      data: { status: FollowUpStatus.CANCELLED },
+      data: {
+        status: FollowUpStatus.CANCELLED,
+        lifecycleStatus: FollowUpLifecycleStatus.ENDED,
+        endDate: new Date(),
+      },
     });
     this.logger.log(`Follow-up ${followUpId} cancelled`);
     return updated;

@@ -3,10 +3,10 @@ import { Request, Response, NextFunction } from 'express';
 
 /**
  * Logs every HTTP request with method, URL, status code, response time,
- * and correlation request ID.
+ * correlation request ID, and authenticated user ID if present.
  *
  * Output example:
- *   [HTTP] GET /api/users 200 - 45ms [req-id: abc-123]
+ *   [HTTP] GET /api/users 200 - 45ms [req-id: abc-123] [user: 42]
  */
 @Injectable()
 export class HttpLoggerMiddleware implements NestMiddleware {
@@ -27,7 +27,12 @@ export class HttpLoggerMiddleware implements NestMiddleware {
       const { statusCode } = res;
 
       const idTag = requestId ? ` [req-id: ${requestId}]` : '';
-      const message = `${method} ${originalUrl} ${statusCode} - ${duration}ms${idTag}`;
+
+      // Extract userId from JWT payload if the AuthGuard has run
+      const user = (req as any).user;
+      const userTag = user?.sub ? ` [user: ${user.sub}]` : '';
+
+      const message = `${method} ${originalUrl} ${statusCode} - ${duration}ms${idTag}${userTag}`;
 
       if (statusCode >= 500) {
         this.logger.error(message);

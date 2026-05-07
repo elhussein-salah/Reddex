@@ -12,7 +12,8 @@
 export const Role = {
   DOCTOR: 'DOCTOR',
   PATIENT: 'PATIENT',
-  ADMIN: 'ADMIN'
+  ADMIN: 'ADMIN',
+  SUPER_ADMIN: 'SUPER_ADMIN'
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -26,3 +27,29 @@ export const FollowUpStatus = {
 } as const
 
 export type FollowUpStatus = (typeof FollowUpStatus)[keyof typeof FollowUpStatus]
+
+
+export const FollowUpLifecycleStatus = {
+  ACTIVE: 'ACTIVE',
+  ENDED: 'ENDED'
+} as const
+
+export type FollowUpLifecycleStatus = (typeof FollowUpLifecycleStatus)[keyof typeof FollowUpLifecycleStatus]
+
+
+export const PrescriptionStatus = {
+  ISSUED: 'ISSUED',
+  FILLED: 'FILLED',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PrescriptionStatus = (typeof PrescriptionStatus)[keyof typeof PrescriptionStatus]
+
+
+export const Gender = {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE'
+} as const
+
+export type Gender = (typeof Gender)[keyof typeof Gender]

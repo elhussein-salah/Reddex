@@ -8,9 +8,17 @@ export class AppService {
   async getHealth() {
     try {
       await this.prisma.$queryRawUnsafe('SELECT 1');
-      return { status: 'ok', database: 'connected', timestamp: new Date().toISOString() };
+      return {
+        status: 'ok',
+        database: 'connected',
+        timestamp: new Date().toISOString(),
+      };
     } catch {
-      return { status: 'degraded', database: 'disconnected', timestamp: new Date().toISOString() };
+      return {
+        status: 'degraded',
+        database: 'disconnected',
+        timestamp: new Date().toISOString(),
+      };
     }
   }
 }

@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -27,6 +28,7 @@ import { RolesGuard } from 'src/auth/role.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/common/config/multer.config';
 import { imageFileFilter } from 'src/common/utils/file-filter.util';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Patients')
 @ApiBearerAuth('JWT-auth')
@@ -37,6 +39,7 @@ export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
 
   @Post()
+  @Roles(Role.ADMIN, Role.DOCTOR, Role.PATIENT)
   @ApiOperation({ summary: 'Create a patient' })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
@@ -51,32 +54,28 @@ export class PatientsController {
   ) {
     return this.patientsService.createPatient(dto, file);
   }
-
   @Get()
   @ApiOperation({ summary: 'Get all patients' })
-  findAll() {
-    return this.patientsService.getPatients();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.patientsService.getPatients(paginationDto);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get patient by ID' })
+  @ApiOperation({ summary: 'Get patient by UserID' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.patientsService.getPatient(id);
   }
 
   @Patch(':id')
   @Roles(Role.ADMIN, Role.PATIENT)
-  @ApiOperation({ summary: 'Update patient by ID' })
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdatePatientDto,
-  ) {
+  @ApiOperation({ summary: 'Update patient by UserID' })
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePatientDto) {
     return this.patientsService.updatePatient(id, dto);
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN, Role.PATIENT)
-  @ApiOperation({ summary: 'Delete patient by ID' })
+  @ApiOperation({ summary: 'Delete patient by UserID' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.patientsService.deletePatient(id);
   }

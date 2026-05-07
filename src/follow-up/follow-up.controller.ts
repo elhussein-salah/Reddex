@@ -5,6 +5,7 @@ import {
   Patch,
   Body,
   Param,
+  Query,
   Req,
   UseGuards,
   ParseIntPipe,
@@ -17,9 +18,10 @@ import { RolesGuard } from '../auth/role.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../enums/role';
 import type { AuthenticatedRequest } from '../common/interfaces/AuthenticatedRequest';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @ApiTags('Follow-Ups')
-@ApiBearerAuth()
+@ApiBearerAuth('JWT-auth')
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('follow-up')
 export class FollowUpController {
@@ -40,8 +42,14 @@ export class FollowUpController {
   })
   @Roles(Role.DOCTOR)
   @Get('doctor')
-  async getDoctorPendingRequests(@Req() req: AuthenticatedRequest) {
-    return this.followUpService.getDoctorPendingRequests(req.user.sub);
+  async getDoctorPendingRequests(
+    @Req() req: AuthenticatedRequest,
+    @Query() pagination: PaginationDto,
+  ) {
+    return this.followUpService.getDoctorPendingRequests(
+      req.user.sub,
+      pagination,
+    );
   }
 
   @ApiOperation({ summary: 'Accept or Reject a follow-up request (Doctor)' })

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FollowUpService } from './follow-up.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ProfileLookupService } from '../common/services/profile-lookup.service';
 
 describe('FollowUpService', () => {
   let service: FollowUpService;
@@ -10,6 +11,13 @@ describe('FollowUpService', () => {
       providers: [
         FollowUpService,
         { provide: PrismaService, useValue: {} },
+        {
+          provide: ProfileLookupService,
+          useValue: {
+            getPatientIdByUserId: jest.fn(),
+            getDoctorIdByUserId: jest.fn(),
+          },
+        },
       ],
     }).compile();
 

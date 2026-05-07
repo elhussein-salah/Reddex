@@ -4,31 +4,42 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { DoctorModule } from './doctor/doctor.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { PatientsModule } from './patients/patients.module';
-import { LabReportsModule } from './lab-reports/lab-reports.module';
 import { FollowUpModule } from './follow-up/follow-up.module';
+import { PrescriptionsModule } from './prescriptions/prescriptions.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import { RequestIdMiddleware, HttpLoggerMiddleware } from './common/middleware';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { validateEnv } from './common/config/env.validation';
+import { AdminAuthModule } from './admin-auth/admin-auth.module';
+import { LabsModule } from './labs/labs.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate: validateEnv,
+    }),
+    ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({
       throttlers: [{ ttl: 60000, limit: 60 }],
     }),
     PrismaModule,
+    AdminAuthModule,
     AuthModule,
     FollowUpModule,
     UserModule,
     DoctorModule,
     CloudinaryModule,
     PatientsModule,
-    LabReportsModule,
+    PrescriptionsModule,
+    LabsModule,
   ],
   controllers: [AppController],
   providers: [
@@ -40,6 +51,10 @@ import { RequestIdMiddleware, HttpLoggerMiddleware } from './common/middleware';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
     },
   ],
 })

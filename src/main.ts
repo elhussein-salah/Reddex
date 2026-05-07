@@ -3,13 +3,20 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, ValidationPipe } from '@nestjs/common';
-
+import helmet from 'helmet';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['log', 'error', 'warn', 'debug', 'verbose'],
   });
 
-  app.enableCors();
+  // Security headers
+  app.use(helmet());
+
+  // CORS — restrict to configured origins (fall back to localhost for dev)
+  const corsOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
+    : ['http://localhost:3000'];
+  app.enableCors({ origin: corsOrigins, credentials: true });
 
   const config = new DocumentBuilder()
     .setTitle('Reddex')
