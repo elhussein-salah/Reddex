@@ -17,6 +17,7 @@ import { RolesGuard } from 'src/auth/role.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/enums';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { FilterDoctorDto } from './dto/filter.doctor.dto';
 
 @ApiTags('Doctors')
 @ApiBearerAuth('JWT-auth')
@@ -28,12 +29,14 @@ export class DoctorController {
   @Get()
   @Roles(Role.ADMIN, Role.DOCTOR, Role.PATIENT)
   @ApiOperation({ summary: 'Get all doctors (paginated)' })
-  findAll(@Query() pagination: PaginationDto) {
-    return this.doctorService.findAll(pagination);
+  findAll(@Query() filter: FilterDoctorDto) {
+    return this.doctorService.findAll(filter);
   }
   @Get('pendings')
   @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Get pending doctor accounts awaiting approval (paginated)' })
+  @ApiOperation({
+    summary: 'Get pending doctor accounts awaiting approval (paginated)',
+  })
   findPendings(@Query() pagination: PaginationDto) {
     return this.doctorService.findPendings(pagination);
   }
