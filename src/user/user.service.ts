@@ -117,6 +117,14 @@ export class UserService {
     };
   }
 
+  async findAdmins() {
+    return this.prisma.users.findMany({
+      where: { role: Role.ADMIN },
+      select: USER_SELECT,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   /**
    * Returns the user or `null` — never throws.
    * Use this in flows where a missing user is not an error (e.g. forgot-password).

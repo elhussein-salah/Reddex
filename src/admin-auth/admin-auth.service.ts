@@ -93,4 +93,25 @@ export class AdminAuthService {
       },
     };
   }
+
+  async getAdmins(actor: { sub: number; role: Role }, requestId?: string): Promise<ApiResponse> {
+    if (actor.role !== Role.SUPER_ADMIN && actor.role !== Role.ADMIN) {
+      this.auditLogger.warn(
+        `[event=get_admins_denied reason=insufficient_role actorUserId=${actor.sub} actorRole=${actor.role} requestId=${requestId ?? 'n/a'}]`,
+      );
+      throw new ForbiddenException('Only admins and super admins can view the admin list');
+    }
+
+    const admins = await this.userService.findAdmins();
+
+    this.auditLogger.log(
+      `[event=get_admins_success actorUserId=${actor.sub} actorRole=${actor.role} count=${admins.length} requestId=${requestId ?? 'n/a'}]`,
+    );
+
+    return {
+      message: 'Admins retrieved successfully',
+      statusCode: 200,
+      data: admins,
+    };
+  }
 }

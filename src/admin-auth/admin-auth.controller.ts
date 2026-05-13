@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Headers,
   Post,
   Req,
@@ -67,5 +68,22 @@ export class AdminAuthController {
     @Headers('x-request-id') requestId?: string,
   ) {
     return this.adminAuthService.registerAdmin(req.user, dto, requestId);
+  }
+
+  @Get('admins')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Get all admins' })
+  @ApiResponse({ status: 200, description: 'Admins retrieved successfully' })
+  @ApiResponse({
+    status: 403,
+    description: 'Only admin or super admin can view admins',
+  })
+  async getAdmins(
+    @Req() req: AuthenticatedRequest,
+    @Headers('x-request-id') requestId?: string,
+  ) {
+    return this.adminAuthService.getAdmins(req.user, requestId);
   }
 }
