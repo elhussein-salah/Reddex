@@ -94,12 +94,17 @@ export class AdminAuthService {
     };
   }
 
-  async getAdmins(actor: { sub: number; role: Role }, requestId?: string): Promise<ApiResponse> {
+  async getAdmins(
+    actor: { sub: number; role: Role },
+    requestId?: string,
+  ): Promise<ApiResponse> {
     if (actor.role !== Role.SUPER_ADMIN && actor.role !== Role.ADMIN) {
       this.auditLogger.warn(
         `[event=get_admins_denied reason=insufficient_role actorUserId=${actor.sub} actorRole=${actor.role} requestId=${requestId ?? 'n/a'}]`,
       );
-      throw new ForbiddenException('Only admins and super admins can view the admin list');
+      throw new ForbiddenException(
+        'Only admins and super admins can view the admin list',
+      );
     }
 
     const admins = await this.userService.findAdmins();
