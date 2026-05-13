@@ -106,8 +106,8 @@ model FollowUp {
   patientId Int
   notes     String
 
-  status          FollowUpStatus          @default(PENDING)
-  endDate         DateTime?
+  status  FollowUpStatus @default(PENDING)
+  endDate DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

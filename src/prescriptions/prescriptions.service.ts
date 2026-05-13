@@ -3,10 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  FollowUpStatus,
-  Prisma,
-} from '../generated/prisma/client';
+import { FollowUpStatus, Prisma } from '../generated/prisma/client';
 import type { ApiResponse } from '../common/interfaces/api.response';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePrescriptionDto } from './dto';

@@ -8,9 +8,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateFollowUpDto } from './dto';
-import {
-  FollowUpStatus,
-} from '../generated/prisma/client';
+import { FollowUpStatus } from '../generated/prisma/client';
 import { ProfileLookupService } from '../common/services/profile-lookup.service';
 
 @Injectable()

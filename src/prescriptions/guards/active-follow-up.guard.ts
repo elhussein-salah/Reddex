@@ -5,9 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  FollowUpStatus,
-} from '../../generated/prisma/client';
+import { FollowUpStatus } from '../../generated/prisma/client';
 import { Role } from '../../enums';
 import type { AuthenticatedRequest } from '../../common/interfaces/AuthenticatedRequest';
 import { PrismaService } from '../../prisma/prisma.service';
