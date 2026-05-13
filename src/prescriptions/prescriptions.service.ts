@@ -15,18 +15,14 @@ const PRESCRIPTION_SELECT = {
   doctorId: true,
   patientId: true,
   medicationName: true,
-  dosage: true,
-  frequency: true,
   duration: true,
-  instructions: true,
-  status: true,
   issuedAt: true,
   createdAt: true,
   updatedAt: true,
   patient: {
     select: {
       id: true,
-      treatment: true,
+      treatments: true,
       user: {
         select: {
           id: true,
@@ -154,10 +150,7 @@ export class PrescriptionsService {
         doctorId,
         patientId: dto.patientId,
         medicationName: dto.medicationName,
-        dosage: dto.dosage,
-        frequency: dto.frequency,
         duration: dto.duration,
-        instructions: dto.instructions,
       },
       select: PRESCRIPTION_SELECT,
     });
