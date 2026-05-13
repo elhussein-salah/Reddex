@@ -29,24 +29,6 @@ export const FollowUpStatus = {
 export type FollowUpStatus = (typeof FollowUpStatus)[keyof typeof FollowUpStatus]
 
 
-export const FollowUpLifecycleStatus = {
-  ACTIVE: 'ACTIVE',
-  ENDED: 'ENDED'
-} as const
-
-export type FollowUpLifecycleStatus = (typeof FollowUpLifecycleStatus)[keyof typeof FollowUpLifecycleStatus]
-
-
-export const PrescriptionStatus = {
-  ISSUED: 'ISSUED',
-  FILLED: 'FILLED',
-  EXPIRED: 'EXPIRED',
-  CANCELLED: 'CANCELLED'
-} as const
-
-export type PrescriptionStatus = (typeof PrescriptionStatus)[keyof typeof PrescriptionStatus]
-
-
 export const Gender = {
   MALE: 'MALE',
   FEMALE: 'FEMALE'

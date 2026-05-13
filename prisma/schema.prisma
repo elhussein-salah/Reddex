@@ -27,18 +27,6 @@ enum FollowUpStatus {
   CANCELLED
 }
 
-enum FollowUpLifecycleStatus {
-  ACTIVE
-  ENDED
-}
-
-enum PrescriptionStatus {
-  ISSUED
-  FILLED
-  EXPIRED
-  CANCELLED
-}
-
 enum Gender {
   MALE
   FEMALE
@@ -76,6 +64,7 @@ model patients {
 
   followUps     FollowUp[]
   prescriptions Prescription[]
+  results       Result[]
 }
 
 model doctors {
@@ -118,7 +107,6 @@ model FollowUp {
   notes     String
 
   status          FollowUpStatus          @default(PENDING)
-  lifecycleStatus FollowUpLifecycleStatus @default(ENDED)
   endDate         DateTime?
 
   createdAt DateTime @default(now())
@@ -134,26 +122,21 @@ model FollowUp {
 }
 
 model Prescription {
-  id             Int                @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   followUpId     Int
   doctorId       Int
   patientId      Int
   medicationName String
-  dosage         String
-  frequency      String
   duration       String
-  instructions   String?
-  status         PrescriptionStatus @default(ISSUED)
-  issuedAt       DateTime           @default(now())
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  issuedAt       DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   followUp FollowUp @relation(fields: [followUpId], references: [id], onDelete: Cascade)
   doctor   doctors  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   patient  patients @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
   @@index([doctorId, patientId])
-  @@index([followUpId, status])
   @@index([patientId, issuedAt])
 }
 
@@ -167,4 +150,16 @@ model PasswordResetOtp {
 
   @@index([email])
   @@index([email, expiresAt])
+}
+
+model Result {
+  id        Int      @id @default(autoincrement())
+  patientId Int
+  result    Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patient patients @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
 }

@@ -46,11 +46,7 @@ export type PrescriptionMinAggregateOutputType = {
   doctorId: number | null
   patientId: number | null
   medicationName: string | null
-  dosage: string | null
-  frequency: string | null
   duration: string | null
-  instructions: string | null
-  status: $Enums.PrescriptionStatus | null
   issuedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -62,11 +58,7 @@ export type PrescriptionMaxAggregateOutputType = {
   doctorId: number | null
   patientId: number | null
   medicationName: string | null
-  dosage: string | null
-  frequency: string | null
   duration: string | null
-  instructions: string | null
-  status: $Enums.PrescriptionStatus | null
   issuedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -78,11 +70,7 @@ export type PrescriptionCountAggregateOutputType = {
   doctorId: number
   patientId: number
   medicationName: number
-  dosage: number
-  frequency: number
   duration: number
-  instructions: number
-  status: number
   issuedAt: number
   createdAt: number
   updatedAt: number
@@ -110,11 +98,7 @@ export type PrescriptionMinAggregateInputType = {
   doctorId?: true
   patientId?: true
   medicationName?: true
-  dosage?: true
-  frequency?: true
   duration?: true
-  instructions?: true
-  status?: true
   issuedAt?: true
   createdAt?: true
   updatedAt?: true
@@ -126,11 +110,7 @@ export type PrescriptionMaxAggregateInputType = {
   doctorId?: true
   patientId?: true
   medicationName?: true
-  dosage?: true
-  frequency?: true
   duration?: true
-  instructions?: true
-  status?: true
   issuedAt?: true
   createdAt?: true
   updatedAt?: true
@@ -142,11 +122,7 @@ export type PrescriptionCountAggregateInputType = {
   doctorId?: true
   patientId?: true
   medicationName?: true
-  dosage?: true
-  frequency?: true
   duration?: true
-  instructions?: true
-  status?: true
   issuedAt?: true
   createdAt?: true
   updatedAt?: true
@@ -245,11 +221,7 @@ export type PrescriptionGroupByOutputType = {
   doctorId: number
   patientId: number
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions: string | null
-  status: $Enums.PrescriptionStatus
   issuedAt: Date
   createdAt: Date
   updatedAt: Date
@@ -284,11 +256,7 @@ export type PrescriptionWhereInput = {
   doctorId?: Prisma.IntFilter<"Prescription"> | number
   patientId?: Prisma.IntFilter<"Prescription"> | number
   medicationName?: Prisma.StringFilter<"Prescription"> | string
-  dosage?: Prisma.StringFilter<"Prescription"> | string
-  frequency?: Prisma.StringFilter<"Prescription"> | string
   duration?: Prisma.StringFilter<"Prescription"> | string
-  instructions?: Prisma.StringNullableFilter<"Prescription"> | string | null
-  status?: Prisma.EnumPrescriptionStatusFilter<"Prescription"> | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
@@ -303,11 +271,7 @@ export type PrescriptionOrderByWithRelationInput = {
   doctorId?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   medicationName?: Prisma.SortOrder
-  dosage?: Prisma.SortOrder
-  frequency?: Prisma.SortOrder
   duration?: Prisma.SortOrder
-  instructions?: Prisma.SortOrderInput | Prisma.SortOrder
-  status?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -325,11 +289,7 @@ export type PrescriptionWhereUniqueInput = Prisma.AtLeast<{
   doctorId?: Prisma.IntFilter<"Prescription"> | number
   patientId?: Prisma.IntFilter<"Prescription"> | number
   medicationName?: Prisma.StringFilter<"Prescription"> | string
-  dosage?: Prisma.StringFilter<"Prescription"> | string
-  frequency?: Prisma.StringFilter<"Prescription"> | string
   duration?: Prisma.StringFilter<"Prescription"> | string
-  instructions?: Prisma.StringNullableFilter<"Prescription"> | string | null
-  status?: Prisma.EnumPrescriptionStatusFilter<"Prescription"> | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
@@ -344,11 +304,7 @@ export type PrescriptionOrderByWithAggregationInput = {
   doctorId?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   medicationName?: Prisma.SortOrder
-  dosage?: Prisma.SortOrder
-  frequency?: Prisma.SortOrder
   duration?: Prisma.SortOrder
-  instructions?: Prisma.SortOrderInput | Prisma.SortOrder
-  status?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -368,11 +324,7 @@ export type PrescriptionScalarWhereWithAggregatesInput = {
   doctorId?: Prisma.IntWithAggregatesFilter<"Prescription"> | number
   patientId?: Prisma.IntWithAggregatesFilter<"Prescription"> | number
   medicationName?: Prisma.StringWithAggregatesFilter<"Prescription"> | string
-  dosage?: Prisma.StringWithAggregatesFilter<"Prescription"> | string
-  frequency?: Prisma.StringWithAggregatesFilter<"Prescription"> | string
   duration?: Prisma.StringWithAggregatesFilter<"Prescription"> | string
-  instructions?: Prisma.StringNullableWithAggregatesFilter<"Prescription"> | string | null
-  status?: Prisma.EnumPrescriptionStatusWithAggregatesFilter<"Prescription"> | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeWithAggregatesFilter<"Prescription"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Prescription"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Prescription"> | Date | string
@@ -380,11 +332,7 @@ export type PrescriptionScalarWhereWithAggregatesInput = {
 
 export type PrescriptionCreateInput = {
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions?: string | null
-  status?: $Enums.PrescriptionStatus
   issuedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -399,11 +347,7 @@ export type PrescriptionUncheckedCreateInput = {
   doctorId: number
   patientId: number
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions?: string | null
-  status?: $Enums.PrescriptionStatus
   issuedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -411,11 +355,7 @@ export type PrescriptionUncheckedCreateInput = {
 
 export type PrescriptionUpdateInput = {
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -430,11 +370,7 @@ export type PrescriptionUncheckedUpdateInput = {
   doctorId?: Prisma.IntFieldUpdateOperationsInput | number
   patientId?: Prisma.IntFieldUpdateOperationsInput | number
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -446,11 +382,7 @@ export type PrescriptionCreateManyInput = {
   doctorId: number
   patientId: number
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions?: string | null
-  status?: $Enums.PrescriptionStatus
   issuedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -458,11 +390,7 @@ export type PrescriptionCreateManyInput = {
 
 export type PrescriptionUpdateManyMutationInput = {
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -474,11 +402,7 @@ export type PrescriptionUncheckedUpdateManyInput = {
   doctorId?: Prisma.IntFieldUpdateOperationsInput | number
   patientId?: Prisma.IntFieldUpdateOperationsInput | number
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -500,11 +424,7 @@ export type PrescriptionCountOrderByAggregateInput = {
   doctorId?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   medicationName?: Prisma.SortOrder
-  dosage?: Prisma.SortOrder
-  frequency?: Prisma.SortOrder
   duration?: Prisma.SortOrder
-  instructions?: Prisma.SortOrder
-  status?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -523,11 +443,7 @@ export type PrescriptionMaxOrderByAggregateInput = {
   doctorId?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   medicationName?: Prisma.SortOrder
-  dosage?: Prisma.SortOrder
-  frequency?: Prisma.SortOrder
   duration?: Prisma.SortOrder
-  instructions?: Prisma.SortOrder
-  status?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -539,11 +455,7 @@ export type PrescriptionMinOrderByAggregateInput = {
   doctorId?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   medicationName?: Prisma.SortOrder
-  dosage?: Prisma.SortOrder
-  frequency?: Prisma.SortOrder
   duration?: Prisma.SortOrder
-  instructions?: Prisma.SortOrder
-  status?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -682,17 +594,9 @@ export type PrescriptionUncheckedUpdateManyWithoutFollowUpNestedInput = {
   deleteMany?: Prisma.PrescriptionScalarWhereInput | Prisma.PrescriptionScalarWhereInput[]
 }
 
-export type EnumPrescriptionStatusFieldUpdateOperationsInput = {
-  set?: $Enums.PrescriptionStatus
-}
-
 export type PrescriptionCreateWithoutPatientInput = {
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions?: string | null
-  status?: $Enums.PrescriptionStatus
   issuedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -705,11 +609,7 @@ export type PrescriptionUncheckedCreateWithoutPatientInput = {
   followUpId: number
   doctorId: number
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions?: string | null
-  status?: $Enums.PrescriptionStatus
   issuedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -750,11 +650,7 @@ export type PrescriptionScalarWhereInput = {
   doctorId?: Prisma.IntFilter<"Prescription"> | number
   patientId?: Prisma.IntFilter<"Prescription"> | number
   medicationName?: Prisma.StringFilter<"Prescription"> | string
-  dosage?: Prisma.StringFilter<"Prescription"> | string
-  frequency?: Prisma.StringFilter<"Prescription"> | string
   duration?: Prisma.StringFilter<"Prescription"> | string
-  instructions?: Prisma.StringNullableFilter<"Prescription"> | string | null
-  status?: Prisma.EnumPrescriptionStatusFilter<"Prescription"> | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Prescription"> | Date | string
@@ -762,11 +658,7 @@ export type PrescriptionScalarWhereInput = {
 
 export type PrescriptionCreateWithoutDoctorInput = {
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions?: string | null
-  status?: $Enums.PrescriptionStatus
   issuedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -779,11 +671,7 @@ export type PrescriptionUncheckedCreateWithoutDoctorInput = {
   followUpId: number
   patientId: number
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions?: string | null
-  status?: $Enums.PrescriptionStatus
   issuedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -817,11 +705,7 @@ export type PrescriptionUpdateManyWithWhereWithoutDoctorInput = {
 
 export type PrescriptionCreateWithoutFollowUpInput = {
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions?: string | null
-  status?: $Enums.PrescriptionStatus
   issuedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -834,11 +718,7 @@ export type PrescriptionUncheckedCreateWithoutFollowUpInput = {
   doctorId: number
   patientId: number
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions?: string | null
-  status?: $Enums.PrescriptionStatus
   issuedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -875,11 +755,7 @@ export type PrescriptionCreateManyPatientInput = {
   followUpId: number
   doctorId: number
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions?: string | null
-  status?: $Enums.PrescriptionStatus
   issuedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -887,11 +763,7 @@ export type PrescriptionCreateManyPatientInput = {
 
 export type PrescriptionUpdateWithoutPatientInput = {
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -904,11 +776,7 @@ export type PrescriptionUncheckedUpdateWithoutPatientInput = {
   followUpId?: Prisma.IntFieldUpdateOperationsInput | number
   doctorId?: Prisma.IntFieldUpdateOperationsInput | number
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -919,11 +787,7 @@ export type PrescriptionUncheckedUpdateManyWithoutPatientInput = {
   followUpId?: Prisma.IntFieldUpdateOperationsInput | number
   doctorId?: Prisma.IntFieldUpdateOperationsInput | number
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -934,11 +798,7 @@ export type PrescriptionCreateManyDoctorInput = {
   followUpId: number
   patientId: number
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions?: string | null
-  status?: $Enums.PrescriptionStatus
   issuedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -946,11 +806,7 @@ export type PrescriptionCreateManyDoctorInput = {
 
 export type PrescriptionUpdateWithoutDoctorInput = {
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -963,11 +819,7 @@ export type PrescriptionUncheckedUpdateWithoutDoctorInput = {
   followUpId?: Prisma.IntFieldUpdateOperationsInput | number
   patientId?: Prisma.IntFieldUpdateOperationsInput | number
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -978,11 +830,7 @@ export type PrescriptionUncheckedUpdateManyWithoutDoctorInput = {
   followUpId?: Prisma.IntFieldUpdateOperationsInput | number
   patientId?: Prisma.IntFieldUpdateOperationsInput | number
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -993,11 +841,7 @@ export type PrescriptionCreateManyFollowUpInput = {
   doctorId: number
   patientId: number
   medicationName: string
-  dosage: string
-  frequency: string
   duration: string
-  instructions?: string | null
-  status?: $Enums.PrescriptionStatus
   issuedAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1005,11 +849,7 @@ export type PrescriptionCreateManyFollowUpInput = {
 
 export type PrescriptionUpdateWithoutFollowUpInput = {
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1022,11 +862,7 @@ export type PrescriptionUncheckedUpdateWithoutFollowUpInput = {
   doctorId?: Prisma.IntFieldUpdateOperationsInput | number
   patientId?: Prisma.IntFieldUpdateOperationsInput | number
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1037,11 +873,7 @@ export type PrescriptionUncheckedUpdateManyWithoutFollowUpInput = {
   doctorId?: Prisma.IntFieldUpdateOperationsInput | number
   patientId?: Prisma.IntFieldUpdateOperationsInput | number
   medicationName?: Prisma.StringFieldUpdateOperationsInput | string
-  dosage?: Prisma.StringFieldUpdateOperationsInput | string
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
   duration?: Prisma.StringFieldUpdateOperationsInput | string
-  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.EnumPrescriptionStatusFieldUpdateOperationsInput | $Enums.PrescriptionStatus
   issuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1055,11 +887,7 @@ export type PrescriptionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   doctorId?: boolean
   patientId?: boolean
   medicationName?: boolean
-  dosage?: boolean
-  frequency?: boolean
   duration?: boolean
-  instructions?: boolean
-  status?: boolean
   issuedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1074,11 +902,7 @@ export type PrescriptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   doctorId?: boolean
   patientId?: boolean
   medicationName?: boolean
-  dosage?: boolean
-  frequency?: boolean
   duration?: boolean
-  instructions?: boolean
-  status?: boolean
   issuedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1093,11 +917,7 @@ export type PrescriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   doctorId?: boolean
   patientId?: boolean
   medicationName?: boolean
-  dosage?: boolean
-  frequency?: boolean
   duration?: boolean
-  instructions?: boolean
-  status?: boolean
   issuedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1112,17 +932,13 @@ export type PrescriptionSelectScalar = {
   doctorId?: boolean
   patientId?: boolean
   medicationName?: boolean
-  dosage?: boolean
-  frequency?: boolean
   duration?: boolean
-  instructions?: boolean
-  status?: boolean
   issuedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PrescriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "followUpId" | "doctorId" | "patientId" | "medicationName" | "dosage" | "frequency" | "duration" | "instructions" | "status" | "issuedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["prescription"]>
+export type PrescriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "followUpId" | "doctorId" | "patientId" | "medicationName" | "duration" | "issuedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["prescription"]>
 export type PrescriptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   followUp?: boolean | Prisma.FollowUpDefaultArgs<ExtArgs>
   doctor?: boolean | Prisma.doctorsDefaultArgs<ExtArgs>
@@ -1152,11 +968,7 @@ export type $PrescriptionPayload<ExtArgs extends runtime.Types.Extensions.Intern
     doctorId: number
     patientId: number
     medicationName: string
-    dosage: string
-    frequency: string
     duration: string
-    instructions: string | null
-    status: $Enums.PrescriptionStatus
     issuedAt: Date
     createdAt: Date
     updatedAt: Date
@@ -1591,11 +1403,7 @@ export interface PrescriptionFieldRefs {
   readonly doctorId: Prisma.FieldRef<"Prescription", 'Int'>
   readonly patientId: Prisma.FieldRef<"Prescription", 'Int'>
   readonly medicationName: Prisma.FieldRef<"Prescription", 'String'>
-  readonly dosage: Prisma.FieldRef<"Prescription", 'String'>
-  readonly frequency: Prisma.FieldRef<"Prescription", 'String'>
   readonly duration: Prisma.FieldRef<"Prescription", 'String'>
-  readonly instructions: Prisma.FieldRef<"Prescription", 'String'>
-  readonly status: Prisma.FieldRef<"Prescription", 'PrescriptionStatus'>
   readonly issuedAt: Prisma.FieldRef<"Prescription", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Prescription", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Prescription", 'DateTime'>

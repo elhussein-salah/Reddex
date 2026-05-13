@@ -9,7 +9,6 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateFollowUpDto } from './dto';
 import {
-  FollowUpLifecycleStatus,
   FollowUpStatus,
 } from '../generated/prisma/client';
 import { ProfileLookupService } from '../common/services/profile-lookup.service';
@@ -53,7 +52,6 @@ export class FollowUpService {
         doctorId: dto.doctorId,
         notes: dto.notes,
         status: FollowUpStatus.PENDING,
-        lifecycleStatus: FollowUpLifecycleStatus.ENDED,
         endDate: null,
       },
     });
@@ -141,10 +139,6 @@ export class FollowUpService {
       where: { id: followUpId },
       data: {
         status,
-        lifecycleStatus:
-          status === FollowUpStatus.ACCEPTED
-            ? FollowUpLifecycleStatus.ACTIVE
-            : FollowUpLifecycleStatus.ENDED,
         endDate: status === FollowUpStatus.ACCEPTED ? null : new Date(),
       },
     });
@@ -184,7 +178,6 @@ export class FollowUpService {
       where: { id: followUpId },
       data: {
         status: FollowUpStatus.CANCELLED,
-        lifecycleStatus: FollowUpLifecycleStatus.ENDED,
         endDate: new Date(),
       },
     });

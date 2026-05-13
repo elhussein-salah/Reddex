@@ -74,3 +74,8 @@ export type Prescription = Prisma.PrescriptionModel
  * 
  */
 export type PasswordResetOtp = Prisma.PasswordResetOtpModel
+/**
+ * Model Result
+ * 
+ */
+export type Result = Prisma.ResultModel

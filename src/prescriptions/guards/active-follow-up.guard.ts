@@ -6,7 +6,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  FollowUpLifecycleStatus,
   FollowUpStatus,
 } from '../../generated/prisma/client';
 import { Role } from '../../enums';
@@ -64,7 +63,6 @@ export class ActiveFollowUpGuard implements CanActivate {
         doctorId: doctor.id,
         patientId,
         status: FollowUpStatus.ACCEPTED,
-        lifecycleStatus: FollowUpLifecycleStatus.ACTIVE,
         OR: [{ endDate: null }, { endDate: { gt: new Date() } }],
       },
       select: { id: true },

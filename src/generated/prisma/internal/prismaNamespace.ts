@@ -390,7 +390,8 @@ export const ModelName = {
   labs: 'labs',
   FollowUp: 'FollowUp',
   Prescription: 'Prescription',
-  PasswordResetOtp: 'PasswordResetOtp'
+  PasswordResetOtp: 'PasswordResetOtp',
+  Result: 'Result'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -406,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "users" | "patients" | "doctors" | "labs" | "followUp" | "prescription" | "passwordResetOtp"
+    modelProps: "users" | "patients" | "doctors" | "labs" | "followUp" | "prescription" | "passwordResetOtp" | "result"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -928,6 +929,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Result: {
+      payload: Prisma.$ResultPayload<ExtArgs>
+      fields: Prisma.ResultFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ResultFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResultPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ResultFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResultPayload>
+        }
+        findFirst: {
+          args: Prisma.ResultFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResultPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ResultFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResultPayload>
+        }
+        findMany: {
+          args: Prisma.ResultFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResultPayload>[]
+        }
+        create: {
+          args: Prisma.ResultCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResultPayload>
+        }
+        createMany: {
+          args: Prisma.ResultCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ResultCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResultPayload>[]
+        }
+        delete: {
+          args: Prisma.ResultDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResultPayload>
+        }
+        update: {
+          args: Prisma.ResultUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResultPayload>
+        }
+        deleteMany: {
+          args: Prisma.ResultDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ResultUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ResultUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResultPayload>[]
+        }
+        upsert: {
+          args: Prisma.ResultUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ResultPayload>
+        }
+        aggregate: {
+          args: Prisma.ResultAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateResult>
+        }
+        groupBy: {
+          args: Prisma.ResultGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ResultGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ResultCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ResultCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1042,7 +1117,6 @@ export const FollowUpScalarFieldEnum = {
   patientId: 'patientId',
   notes: 'notes',
   status: 'status',
-  lifecycleStatus: 'lifecycleStatus',
   endDate: 'endDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1057,11 +1131,7 @@ export const PrescriptionScalarFieldEnum = {
   doctorId: 'doctorId',
   patientId: 'patientId',
   medicationName: 'medicationName',
-  dosage: 'dosage',
-  frequency: 'frequency',
   duration: 'duration',
-  instructions: 'instructions',
-  status: 'status',
   issuedAt: 'issuedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1082,12 +1152,30 @@ export const PasswordResetOtpScalarFieldEnum = {
 export type PasswordResetOtpScalarFieldEnum = (typeof PasswordResetOtpScalarFieldEnum)[keyof typeof PasswordResetOtpScalarFieldEnum]
 
 
+export const ResultScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  result: 'result',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ResultScalarFieldEnum = (typeof ResultScalarFieldEnum)[keyof typeof ResultScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -1104,6 +1192,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -1204,30 +1301,16 @@ export type ListEnumFollowUpStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
 
 
 /**
- * Reference to a field of type 'FollowUpLifecycleStatus'
+ * Reference to a field of type 'Json'
  */
-export type EnumFollowUpLifecycleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FollowUpLifecycleStatus'>
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
     
 
 
 /**
- * Reference to a field of type 'FollowUpLifecycleStatus[]'
+ * Reference to a field of type 'QueryMode'
  */
-export type ListEnumFollowUpLifecycleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FollowUpLifecycleStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'PrescriptionStatus'
- */
-export type EnumPrescriptionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrescriptionStatus'>
-    
-
-
-/**
- * Reference to a field of type 'PrescriptionStatus[]'
- */
-export type ListEnumPrescriptionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrescriptionStatus[]'>
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -1361,6 +1444,7 @@ export type GlobalOmitConfig = {
   followUp?: Prisma.FollowUpOmit
   prescription?: Prisma.PrescriptionOmit
   passwordResetOtp?: Prisma.PasswordResetOtpOmit
+  result?: Prisma.ResultOmit
 }
 
 /* Types for Logging */

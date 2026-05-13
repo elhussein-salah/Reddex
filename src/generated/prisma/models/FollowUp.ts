@@ -44,7 +44,6 @@ export type FollowUpMinAggregateOutputType = {
   patientId: number | null
   notes: string | null
   status: $Enums.FollowUpStatus | null
-  lifecycleStatus: $Enums.FollowUpLifecycleStatus | null
   endDate: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -56,7 +55,6 @@ export type FollowUpMaxAggregateOutputType = {
   patientId: number | null
   notes: string | null
   status: $Enums.FollowUpStatus | null
-  lifecycleStatus: $Enums.FollowUpLifecycleStatus | null
   endDate: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -68,7 +66,6 @@ export type FollowUpCountAggregateOutputType = {
   patientId: number
   notes: number
   status: number
-  lifecycleStatus: number
   endDate: number
   createdAt: number
   updatedAt: number
@@ -94,7 +91,6 @@ export type FollowUpMinAggregateInputType = {
   patientId?: true
   notes?: true
   status?: true
-  lifecycleStatus?: true
   endDate?: true
   createdAt?: true
   updatedAt?: true
@@ -106,7 +102,6 @@ export type FollowUpMaxAggregateInputType = {
   patientId?: true
   notes?: true
   status?: true
-  lifecycleStatus?: true
   endDate?: true
   createdAt?: true
   updatedAt?: true
@@ -118,7 +113,6 @@ export type FollowUpCountAggregateInputType = {
   patientId?: true
   notes?: true
   status?: true
-  lifecycleStatus?: true
   endDate?: true
   createdAt?: true
   updatedAt?: true
@@ -217,7 +211,6 @@ export type FollowUpGroupByOutputType = {
   patientId: number
   notes: string
   status: $Enums.FollowUpStatus
-  lifecycleStatus: $Enums.FollowUpLifecycleStatus
   endDate: Date | null
   createdAt: Date
   updatedAt: Date
@@ -252,7 +245,6 @@ export type FollowUpWhereInput = {
   patientId?: Prisma.IntFilter<"FollowUp"> | number
   notes?: Prisma.StringFilter<"FollowUp"> | string
   status?: Prisma.EnumFollowUpStatusFilter<"FollowUp"> | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFilter<"FollowUp"> | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.DateTimeNullableFilter<"FollowUp"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"FollowUp"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FollowUp"> | Date | string
@@ -267,7 +259,6 @@ export type FollowUpOrderByWithRelationInput = {
   patientId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  lifecycleStatus?: Prisma.SortOrder
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -285,7 +276,6 @@ export type FollowUpWhereUniqueInput = Prisma.AtLeast<{
   patientId?: Prisma.IntFilter<"FollowUp"> | number
   notes?: Prisma.StringFilter<"FollowUp"> | string
   status?: Prisma.EnumFollowUpStatusFilter<"FollowUp"> | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFilter<"FollowUp"> | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.DateTimeNullableFilter<"FollowUp"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"FollowUp"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FollowUp"> | Date | string
@@ -300,7 +290,6 @@ export type FollowUpOrderByWithAggregationInput = {
   patientId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  lifecycleStatus?: Prisma.SortOrder
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -320,7 +309,6 @@ export type FollowUpScalarWhereWithAggregatesInput = {
   patientId?: Prisma.IntWithAggregatesFilter<"FollowUp"> | number
   notes?: Prisma.StringWithAggregatesFilter<"FollowUp"> | string
   status?: Prisma.EnumFollowUpStatusWithAggregatesFilter<"FollowUp"> | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusWithAggregatesFilter<"FollowUp"> | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"FollowUp"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FollowUp"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FollowUp"> | Date | string
@@ -329,7 +317,6 @@ export type FollowUpScalarWhereWithAggregatesInput = {
 export type FollowUpCreateInput = {
   notes: string
   status?: $Enums.FollowUpStatus
-  lifecycleStatus?: $Enums.FollowUpLifecycleStatus
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -344,7 +331,6 @@ export type FollowUpUncheckedCreateInput = {
   patientId: number
   notes: string
   status?: $Enums.FollowUpStatus
-  lifecycleStatus?: $Enums.FollowUpLifecycleStatus
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -354,7 +340,6 @@ export type FollowUpUncheckedCreateInput = {
 export type FollowUpUpdateInput = {
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFieldUpdateOperationsInput | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -369,7 +354,6 @@ export type FollowUpUncheckedUpdateInput = {
   patientId?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFieldUpdateOperationsInput | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -382,7 +366,6 @@ export type FollowUpCreateManyInput = {
   patientId: number
   notes: string
   status?: $Enums.FollowUpStatus
-  lifecycleStatus?: $Enums.FollowUpLifecycleStatus
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -391,7 +374,6 @@ export type FollowUpCreateManyInput = {
 export type FollowUpUpdateManyMutationInput = {
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFieldUpdateOperationsInput | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -403,7 +385,6 @@ export type FollowUpUncheckedUpdateManyInput = {
   patientId?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFieldUpdateOperationsInput | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -425,7 +406,6 @@ export type FollowUpCountOrderByAggregateInput = {
   patientId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  lifecycleStatus?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -443,7 +423,6 @@ export type FollowUpMaxOrderByAggregateInput = {
   patientId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  lifecycleStatus?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -455,7 +434,6 @@ export type FollowUpMinOrderByAggregateInput = {
   patientId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  lifecycleStatus?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -560,10 +538,6 @@ export type EnumFollowUpStatusFieldUpdateOperationsInput = {
   set?: $Enums.FollowUpStatus
 }
 
-export type EnumFollowUpLifecycleStatusFieldUpdateOperationsInput = {
-  set?: $Enums.FollowUpLifecycleStatus
-}
-
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
@@ -585,7 +559,6 @@ export type FollowUpUpdateOneRequiredWithoutPrescriptionsNestedInput = {
 export type FollowUpCreateWithoutPatientInput = {
   notes: string
   status?: $Enums.FollowUpStatus
-  lifecycleStatus?: $Enums.FollowUpLifecycleStatus
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -598,7 +571,6 @@ export type FollowUpUncheckedCreateWithoutPatientInput = {
   doctorId: number
   notes: string
   status?: $Enums.FollowUpStatus
-  lifecycleStatus?: $Enums.FollowUpLifecycleStatus
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -640,7 +612,6 @@ export type FollowUpScalarWhereInput = {
   patientId?: Prisma.IntFilter<"FollowUp"> | number
   notes?: Prisma.StringFilter<"FollowUp"> | string
   status?: Prisma.EnumFollowUpStatusFilter<"FollowUp"> | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFilter<"FollowUp"> | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.DateTimeNullableFilter<"FollowUp"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"FollowUp"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FollowUp"> | Date | string
@@ -649,7 +620,6 @@ export type FollowUpScalarWhereInput = {
 export type FollowUpCreateWithoutDoctorInput = {
   notes: string
   status?: $Enums.FollowUpStatus
-  lifecycleStatus?: $Enums.FollowUpLifecycleStatus
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -662,7 +632,6 @@ export type FollowUpUncheckedCreateWithoutDoctorInput = {
   patientId: number
   notes: string
   status?: $Enums.FollowUpStatus
-  lifecycleStatus?: $Enums.FollowUpLifecycleStatus
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -698,7 +667,6 @@ export type FollowUpUpdateManyWithWhereWithoutDoctorInput = {
 export type FollowUpCreateWithoutPrescriptionsInput = {
   notes: string
   status?: $Enums.FollowUpStatus
-  lifecycleStatus?: $Enums.FollowUpLifecycleStatus
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -712,7 +680,6 @@ export type FollowUpUncheckedCreateWithoutPrescriptionsInput = {
   patientId: number
   notes: string
   status?: $Enums.FollowUpStatus
-  lifecycleStatus?: $Enums.FollowUpLifecycleStatus
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -737,7 +704,6 @@ export type FollowUpUpdateToOneWithWhereWithoutPrescriptionsInput = {
 export type FollowUpUpdateWithoutPrescriptionsInput = {
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFieldUpdateOperationsInput | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -751,7 +717,6 @@ export type FollowUpUncheckedUpdateWithoutPrescriptionsInput = {
   patientId?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFieldUpdateOperationsInput | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -762,7 +727,6 @@ export type FollowUpCreateManyPatientInput = {
   doctorId: number
   notes: string
   status?: $Enums.FollowUpStatus
-  lifecycleStatus?: $Enums.FollowUpLifecycleStatus
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -771,7 +735,6 @@ export type FollowUpCreateManyPatientInput = {
 export type FollowUpUpdateWithoutPatientInput = {
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFieldUpdateOperationsInput | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -784,7 +747,6 @@ export type FollowUpUncheckedUpdateWithoutPatientInput = {
   doctorId?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFieldUpdateOperationsInput | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -796,7 +758,6 @@ export type FollowUpUncheckedUpdateManyWithoutPatientInput = {
   doctorId?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFieldUpdateOperationsInput | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -807,7 +768,6 @@ export type FollowUpCreateManyDoctorInput = {
   patientId: number
   notes: string
   status?: $Enums.FollowUpStatus
-  lifecycleStatus?: $Enums.FollowUpLifecycleStatus
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -816,7 +776,6 @@ export type FollowUpCreateManyDoctorInput = {
 export type FollowUpUpdateWithoutDoctorInput = {
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFieldUpdateOperationsInput | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -829,7 +788,6 @@ export type FollowUpUncheckedUpdateWithoutDoctorInput = {
   patientId?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFieldUpdateOperationsInput | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -841,7 +799,6 @@ export type FollowUpUncheckedUpdateManyWithoutDoctorInput = {
   patientId?: Prisma.IntFieldUpdateOperationsInput | number
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumFollowUpStatusFieldUpdateOperationsInput | $Enums.FollowUpStatus
-  lifecycleStatus?: Prisma.EnumFollowUpLifecycleStatusFieldUpdateOperationsInput | $Enums.FollowUpLifecycleStatus
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -884,7 +841,6 @@ export type FollowUpSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   patientId?: boolean
   notes?: boolean
   status?: boolean
-  lifecycleStatus?: boolean
   endDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -900,7 +856,6 @@ export type FollowUpSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   patientId?: boolean
   notes?: boolean
   status?: boolean
-  lifecycleStatus?: boolean
   endDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -914,7 +869,6 @@ export type FollowUpSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   patientId?: boolean
   notes?: boolean
   status?: boolean
-  lifecycleStatus?: boolean
   endDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -928,13 +882,12 @@ export type FollowUpSelectScalar = {
   patientId?: boolean
   notes?: boolean
   status?: boolean
-  lifecycleStatus?: boolean
   endDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type FollowUpOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "doctorId" | "patientId" | "notes" | "status" | "lifecycleStatus" | "endDate" | "createdAt" | "updatedAt", ExtArgs["result"]["followUp"]>
+export type FollowUpOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "doctorId" | "patientId" | "notes" | "status" | "endDate" | "createdAt" | "updatedAt", ExtArgs["result"]["followUp"]>
 export type FollowUpInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   doctor?: boolean | Prisma.doctorsDefaultArgs<ExtArgs>
   patient?: boolean | Prisma.patientsDefaultArgs<ExtArgs>
@@ -963,7 +916,6 @@ export type $FollowUpPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     patientId: number
     notes: string
     status: $Enums.FollowUpStatus
-    lifecycleStatus: $Enums.FollowUpLifecycleStatus
     endDate: Date | null
     createdAt: Date
     updatedAt: Date
@@ -1398,7 +1350,6 @@ export interface FollowUpFieldRefs {
   readonly patientId: Prisma.FieldRef<"FollowUp", 'Int'>
   readonly notes: Prisma.FieldRef<"FollowUp", 'String'>
   readonly status: Prisma.FieldRef<"FollowUp", 'FollowUpStatus'>
-  readonly lifecycleStatus: Prisma.FieldRef<"FollowUp", 'FollowUpLifecycleStatus'>
   readonly endDate: Prisma.FieldRef<"FollowUp", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"FollowUp", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"FollowUp", 'DateTime'>

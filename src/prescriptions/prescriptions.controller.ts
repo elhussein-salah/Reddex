@@ -28,7 +28,7 @@ export class PrescriptionsController {
   constructor(private readonly prescriptionsService: PrescriptionsService) {}
 
   @Get('me')
-  @Roles(Role.PATIENT)
+  @Roles(Role.PATIENT, Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR)
   @ApiOperation({
     summary: 'Get prescriptions for the logged-in patient (paginated)',
   })
@@ -43,7 +43,7 @@ export class PrescriptionsController {
   }
 
   @Get('patient/:patientId')
-  @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR, Role.PATIENT)
   @ApiOperation({
     summary: 'Get all prescriptions for a patient by patient ID (paginated)',
   })

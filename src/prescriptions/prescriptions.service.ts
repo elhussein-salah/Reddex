@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  FollowUpLifecycleStatus,
   FollowUpStatus,
   Prisma,
 } from '../generated/prisma/client';
@@ -30,6 +29,7 @@ const PRESCRIPTION_SELECT = {
   patient: {
     select: {
       id: true,
+      treatment: true,
       user: {
         select: {
           id: true,
@@ -137,7 +137,6 @@ export class PrescriptionsService {
           doctorId,
           patientId: dto.patientId,
           status: FollowUpStatus.ACCEPTED,
-          lifecycleStatus: FollowUpLifecycleStatus.ACTIVE,
           OR: [{ endDate: null }, { endDate: { gt: new Date() } }],
         },
         select: { id: true },
