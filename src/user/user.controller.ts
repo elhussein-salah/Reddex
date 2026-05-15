@@ -87,7 +87,7 @@ export class UserController {
 
   // ================= READ =================
   @Get()
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR, Role.PATIENT)
   @ApiOperation({ summary: 'Get all users (paginated)' })
   @ApiResponse({ status: 200, description: 'Paginated user list' })
   findAll(@Query() pagination: PaginationDto) {
@@ -115,7 +115,7 @@ export class UserController {
   // }
 
   @Get('email/:email')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR, Role.PATIENT)
   @ApiOperation({ summary: 'Get user by email' })
   @ApiResponse({ status: 200, description: 'User found' })
   @ApiResponse({ status: 401, description: 'User not found' })
@@ -125,7 +125,7 @@ export class UserController {
 
   // ================= UPDATE =================
   @Patch(':id')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR, Role.PATIENT)
   @ApiOperation({ summary: 'Update user' })
   @ApiResponse({ status: 200, description: 'User updated successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
@@ -135,7 +135,7 @@ export class UserController {
 
   // ================= DELETE =================
   @Delete(':id')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR, Role.PATIENT)
   @ApiOperation({ summary: 'Delete user' })
   @ApiResponse({ status: 200, description: 'User deleted successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
