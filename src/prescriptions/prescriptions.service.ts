@@ -16,23 +16,18 @@ const PRESCRIPTION_SELECT = {
   patientId: true,
   medicationName: true,
   duration: true,
-  issuedAt: true,
-  createdAt: true,
-  updatedAt: true,
   patient: {
     select: {
-      id: true,
       treatments: true,
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone: true,
-        },
-      },
     },
   },
+} as const;
+
+const MEDICATION_OVERVIEW_SELECT = {
+  id: true,
+  medicationName: true,
+  duration: true,
+  issuedAt: true,
   doctor: {
     select: {
       id: true,
@@ -40,8 +35,6 @@ const PRESCRIPTION_SELECT = {
         select: {
           id: true,
           name: true,
-          email: true,
-          phone: true,
         },
       },
     },
@@ -92,6 +85,34 @@ export class PrescriptionsService {
           limit: pagination.take,
           totalPages: Math.ceil(total / pagination.take),
         },
+      },
+    };
+  }
+
+  async getMyMedications(userId: number): Promise<ApiResponse> {
+    const patientId = await this.profileLookup.getPatientIdByUserId(userId);
+
+    const [patient, prescriptions] = await Promise.all([
+      this.prisma.patients.findUnique({
+        where: { id: patientId },
+        select: {
+          treatments: true,
+        },
+      }),
+      this.prisma.prescription.findMany({
+        where: { patientId },
+        select: MEDICATION_OVERVIEW_SELECT,
+        orderBy: { issuedAt: 'desc' },
+      }),
+    ]);
+
+    return {
+      message: 'Medications fetched successfully',
+      statusCode: 200,
+      data: {
+        treatments: patient?.treatments ?? [],
+        prescribed: prescriptions,
+        allMedications: [...(patient?.treatments ?? []), ...prescriptions],
       },
     };
   }

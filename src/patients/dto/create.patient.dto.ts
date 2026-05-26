@@ -7,6 +7,8 @@ import {
   IsArray,
 } from 'class-validator';
 import { CreateUserDto } from 'src/user/dto';
+import { TransformStringArray } from 'src/common/utils/parse-string-array.transform';
+
 export class CreatePatientDto extends CreateUserDto {
   @ApiProperty({
     example: 'Stable',
@@ -33,6 +35,7 @@ export class CreatePatientDto extends CreateUserDto {
     required: false,
     type: [String],
   })
+  @TransformStringArray()
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
@@ -44,6 +47,7 @@ export class CreatePatientDto extends CreateUserDto {
     required: false,
     type: [String],
   })
+  @TransformStringArray()
   @IsOptional()
   @IsArray()
   @IsString({ each: true })

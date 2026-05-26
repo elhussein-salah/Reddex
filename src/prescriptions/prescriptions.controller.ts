@@ -42,6 +42,16 @@ export class PrescriptionsController {
     );
   }
 
+  @Get('me/medications')
+  @Roles(Role.PATIENT, Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR)
+  @ApiOperation({
+    summary:
+      'Get a combined medications overview: self-reported treatments/diseases + doctor-prescribed medications',
+  })
+  findMyMedications(@Req() req: AuthenticatedRequest) {
+    return this.prescriptionsService.getMyMedications(req.user.sub);
+  }
+
   @Get('patient/:patientId')
   @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR, Role.PATIENT)
   @ApiOperation({
