@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   Logger,
@@ -204,11 +205,16 @@ export class PatientsService {
   //     throw error;
   //   }
   // }
-  async updatePatient(id: number, dto: UpdatePatientDto) {
+  async updatePatient(
+    id: number,
+    dto: UpdatePatientDto,
+    file?: Express.Multer.File,
+  ) {
     const existingUser = await this.prisma.users.findUnique({
       where: { id },
       select: {
         id: true,
+        photourl: true,
         patients: {
           select: { id: true },
         },
@@ -221,6 +227,37 @@ export class PatientsService {
 
     const userData: Record<string, any> = {};
     const patientData: Record<string, any> = {};
+
+    // Handle Profile Picture
+    if (file) {
+      try {
+        const uploadedImage = await this.cloudinary.uploadImage(
+          file,
+          UploadFolder.PATIENT_PROFILE,
+        );
+        userData.photourl = uploadedImage.url;
+
+        // Cleanup old image if it exists
+        if (existingUser.photourl) {
+          const publicId = this.cloudinary.extractPublicId(
+            existingUser.photourl,
+          );
+          if (publicId) {
+            await this.cloudinary.deleteFile(publicId);
+          }
+        }
+      } catch (uploadErr) {
+        const err =
+          uploadErr instanceof Error ? uploadErr : new Error(String(uploadErr));
+        this.logger.error(
+          `Profile image update failed for user ${id}`,
+          err.stack,
+        );
+        // We decide if we want to fail the whole update or just proceed.
+        // For updates, it's safer to fail if the user explicitly tried to change the photo.
+        throw new BadRequestException('Failed to upload profile picture');
+      }
+    }
 
     // User fields
     if (dto.birthdate !== undefined) {

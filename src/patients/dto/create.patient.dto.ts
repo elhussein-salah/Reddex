@@ -52,4 +52,7 @@ export class CreatePatientDto extends CreateUserDto {
   @IsArray()
   @IsString({ each: true })
   treatments?: string[];
+
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  profilePicture?: any;
 }

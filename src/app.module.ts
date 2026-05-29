@@ -19,6 +19,7 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import { validateEnv } from './common/config/env.validation';
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { LabsModule } from './labs/labs.module';
+import { ResultsModule } from './results/results.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { LabsModule } from './labs/labs.module';
     PatientsModule,
     PrescriptionsModule,
     LabsModule,
+    ResultsModule,
   ],
   controllers: [AppController],
   providers: [

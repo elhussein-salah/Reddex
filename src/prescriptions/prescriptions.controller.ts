@@ -27,26 +27,25 @@ import { PaginationDto } from '../common/dto/pagination.dto';
 export class PrescriptionsController {
   constructor(private readonly prescriptionsService: PrescriptionsService) {}
 
-  @Get('me')
-  @Roles(Role.PATIENT, Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR)
-  @ApiOperation({
-    summary: 'Get prescriptions for the logged-in patient (paginated)',
-  })
-  findMyPrescriptions(
-    @Req() req: AuthenticatedRequest,
-    @Query() pagination: PaginationDto,
-  ) {
-    return this.prescriptionsService.getMyPrescriptions(
-      req.user.sub,
-      pagination,
-    );
-  }
+  // @Get('me')
+  // @Roles(Role.PATIENT, Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR)
+  // @ApiOperation({
+  //   summary: 'Get prescriptions for the logged-in patient (paginated)',
+  // })
+  // findMyPrescriptions(
+  //   @Req() req: AuthenticatedRequest,
+  //   @Query() pagination: PaginationDto,
+  // ) {
+  //   return this.prescriptionsService.getMyPrescriptions(
+  //     req.user.sub,
+  //     pagination,
+  //   );
+  // }
 
   @Get('me/medications')
   @Roles(Role.PATIENT, Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR)
   @ApiOperation({
-    summary:
-      'Get a combined medications overview: self-reported treatments/diseases + doctor-prescribed medications',
+    summary: 'Get all medications for the logged-in patient',
   })
   findMyMedications(@Req() req: AuthenticatedRequest) {
     return this.prescriptionsService.getMyMedications(req.user.sub);

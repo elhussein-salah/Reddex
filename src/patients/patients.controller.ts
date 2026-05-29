@@ -69,8 +69,19 @@ export class PatientsController {
   @Patch(':id')
   @Roles(Role.ADMIN, Role.PATIENT)
   @ApiOperation({ summary: 'Update patient by UserID' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePatientDto) {
-    return this.patientsService.updatePatient(id, dto);
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileInterceptor('profilePicture', {
+      ...multerConfig,
+      fileFilter: imageFileFilter,
+    }),
+  )
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdatePatientDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.patientsService.updatePatient(id, dto, file);
   }
 
   @Delete(':id')

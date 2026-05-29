@@ -35,11 +35,20 @@ const USER_SAFE_SELECT = {
   phone: true,
   photourl: true,
   role: true,
+  birthdate: true,
   isActive: true,
   createdAt: true,
   updatedAt: true,
 } as const;
-
+const patientProfileSelect = {
+  user: {
+    select: USER_SAFE_SELECT,
+  },
+  id: true,
+  bloodType: true,
+  healthStatus: true,
+  diseases: true,
+} as const;
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
@@ -203,18 +212,30 @@ export class UserService {
 
       if (!doctor) throw new NotFoundException('not found');
 
-      return doctor;
+      return {
+        ...doctor,
+        user: {
+          ...doctor.user,
+          age: this.calculateAge(doctor.user?.birthdate),
+        },
+      };
     }
 
     if (dto.role === Role.PATIENT) {
       const patient = await this.prisma.patients.findUnique({
         where: { userId: dto.sub },
-        include: { user: { select: USER_SAFE_SELECT } },
+        select: patientProfileSelect,
       });
 
       if (!patient) throw new NotFoundException('not found');
 
-      return patient;
+      return {
+        ...patient,
+        user: {
+          ...patient.user,
+          age: this.calculateAge(patient.user?.birthdate),
+        },
+      };
     }
 
     if (dto.role === Role.ADMIN || dto.role === Role.SUPER_ADMIN) {
@@ -225,7 +246,10 @@ export class UserService {
 
       if (!admin) throw new NotFoundException('not found');
 
-      return admin;
+      return {
+        ...admin,
+        age: this.calculateAge(admin.birthdate),
+      };
     }
 
     throw new BadRequestException('invalid data');
@@ -297,6 +321,17 @@ export class UserService {
   }
 
   // ================= PRIVATE =================
+
+  private calculateAge(birthdate: Date | null | undefined): number | null {
+    if (!birthdate) return null;
+    const today = new Date();
+    let age = today.getFullYear() - birthdate.getFullYear();
+    const m = today.getMonth() - birthdate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthdate.getDate())) {
+      age--;
+    }
+    return age;
+  }
 
   private async uploadProfileImage(
     folderName: UploadFolder,

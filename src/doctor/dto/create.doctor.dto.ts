@@ -38,7 +38,7 @@ export class CreateDoctorDto extends CreateUserDto {
 
   @ApiPropertyOptional({
     example: 'Cairo Heart Clinic',
-    description: 'Name of the doctor\'s clinic',
+    description: "Name of the doctor's clinic",
   })
   @IsOptional()
   @IsString()
