@@ -300,7 +300,10 @@ export class PatientsService {
     if (dto.treatments !== undefined) {
       patientData.treatments = dto.treatments;
     }
-
+    //update password if provided
+    if (dto.password !== undefined) {
+      userData.password = await argon2.hash(dto.password);
+    }
     try {
       await this.prisma.users.update({
         where: { id },
