@@ -61,6 +61,15 @@ export class FollowUpController {
     return this.followUpService.getDoctorPatients(req.user.sub);
   }
 
+  @ApiOperation({
+    summary: 'List all doctors followed by the logged-in patient',
+  })
+  @Roles(Role.PATIENT)
+  @Get('patient/doctors')
+  async getPatientDoctors(@Req() req: AuthenticatedRequest) {
+    return this.followUpService.getPatientDoctors(req.user.sub);
+  }
+
   @ApiOperation({ summary: 'Accept or Reject a follow-up request (Doctor)' })
   @Roles(Role.DOCTOR)
   @Patch(':id/respond')

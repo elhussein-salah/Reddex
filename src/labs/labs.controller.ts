@@ -77,9 +77,9 @@ export class LabsController {
 
   @Get()
   @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR, Role.PATIENT)
-  @ApiOperation({ summary: 'Get all labs (paginated)' })
-  findAll(@Query() pagination: PaginationDto) {
-    return this.labsService.findAll(pagination);
+  @ApiOperation({ summary: 'Get all labs' })
+  findAll() {
+    return this.labsService.findAll();
   }
 
   @Get(':id')

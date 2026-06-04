@@ -134,6 +134,40 @@ export class FollowUpService {
     };
   }
 
+  async getPatientDoctors(userId: number) {
+    const patientId = await this.profileLookup.getPatientIdByUserId(userId);
+
+    const where = {
+      followUps: {
+        some: {
+          patientId,
+          status: FollowUpStatus.ACCEPTED,
+          OR: [{ endDate: null }, { endDate: { gt: new Date() } }],
+        },
+      },
+    };
+
+    const data = await this.prisma.doctors.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            gender: true,
+            photourl: true,
+          },
+        },
+      },
+    });
+
+    return {
+      data,
+    };
+  }
+
   async respondToRequest(
     userId: number,
     followUpId: number,

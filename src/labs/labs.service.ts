@@ -74,30 +74,16 @@ export class LabsService {
     });
   }
 
-  async findAll(pagination: PaginationDto) {
-    const skip = ((pagination.page ?? 1) - 1) * (pagination.limit ?? 10);
-    const take = pagination.limit ?? 10;
-
-    const [data, total] = await Promise.all([
-      this.prisma.labs.findMany({
-        select: LAB_SELECT,
-        skip,
-        take,
-        orderBy: {
-          [pagination.sortBy ?? 'createdAt']: pagination.sortOrder ?? 'desc',
-        },
-      }),
-      this.prisma.labs.count(),
-    ]);
+  async findAll() {
+    const data = await this.prisma.labs.findMany({
+      select: LAB_SELECT,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
     return {
       data,
-      meta: {
-        total,
-        page: pagination.page ?? 1,
-        limit: take,
-        totalPages: Math.ceil(total / take),
-      },
     };
   }
 
