@@ -28,7 +28,7 @@ export class DoctorController {
 
   @Get()
   @Roles(Role.ADMIN, Role.DOCTOR, Role.PATIENT)
-  @ApiOperation({ summary: 'Get all doctors (paginated)' })
+  @ApiOperation({ summary: 'Get all doctors' })
   findAll(@Query() filter: FilterDoctorDto) {
     return this.doctorService.findAll(filter);
   }

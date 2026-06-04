@@ -63,10 +63,6 @@ export class DoctorService {
   ) {}
 
   async findAll(filter: {
-    skip: number;
-    take: number;
-    sortBy: string;
-    sortOrder: 'asc' | 'desc';
     search?: string;
   }) {
     const where: Prisma.doctorsWhereInput = {};
@@ -81,25 +77,13 @@ export class DoctorService {
       };
     }
 
-    const [data, total] = await Promise.all([
-      this.prisma.doctors.findMany({
-        select: DOCTOR_SELECT,
-        where,
-        skip: filter.skip,
-        take: filter.take,
-        orderBy: { [filter.sortBy]: filter.sortOrder },
-      }),
-      this.prisma.doctors.count({ where }),
-    ]);
+    const data = await this.prisma.doctors.findMany({
+      select: DOCTOR_SELECT,
+      where,
+    });
 
     return {
       data,
-      meta: {
-        total,
-        page: Math.floor(filter.skip / filter.take) + 1,
-        limit: filter.take,
-        totalPages: Math.ceil(total / filter.take),
-      },
     };
   }
   async findPendings(pagination: {
