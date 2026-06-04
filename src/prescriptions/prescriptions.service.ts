@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { FollowUpStatus, Prisma } from '../generated/prisma/client';
+import { Role } from '../enums';
 import type { ApiResponse } from '../common/interfaces/api.response';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePrescriptionDto } from './dto';
@@ -188,6 +189,38 @@ export class PrescriptionsService {
     if (!patient) {
       throw new NotFoundException(`Patient with ID ${patientId} not found`);
     }
+  }
+
+  async deletePrescription(
+    id: number,
+    userId: number,
+    role: string,
+  ): Promise<ApiResponse> {
+    const prescription = await this.prisma.prescription.findUnique({
+      where: { id },
+    });
+
+    if (!prescription) {
+      throw new NotFoundException(`Prescription with ID ${id} not found`);
+    }
+
+    if (role === Role.DOCTOR) {
+      const doctorId = await this.profileLookup.getDoctorIdByUserId(userId);
+      if (prescription.doctorId !== doctorId) {
+        throw new ForbiddenException(
+          'You are not authorized to delete this prescription.',
+        );
+      }
+    }
+
+    await this.prisma.prescription.delete({
+      where: { id },
+    });
+
+    return {
+      message: 'Prescription deleted successfully',
+      statusCode: 200,
+    };
   }
 
   private toCreateResponse(data: PrescriptionRecord): ApiResponse {

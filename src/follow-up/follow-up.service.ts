@@ -48,7 +48,6 @@ export class FollowUpService {
       data: {
         patientId,
         doctorId: dto.doctorId,
-        notes: dto.notes,
         status: FollowUpStatus.PENDING,
         endDate: null,
       },
@@ -98,6 +97,40 @@ export class FollowUpService {
         limit: pagination.take,
         totalPages: Math.ceil(total / pagination.take),
       },
+    };
+  }
+
+  async getDoctorPatients(userId: number) {
+    const doctorId = await this.profileLookup.getDoctorIdByUserId(userId);
+
+    const where = {
+      followUps: {
+        some: {
+          doctorId,
+          status: FollowUpStatus.ACCEPTED,
+          OR: [{ endDate: null }, { endDate: { gt: new Date() } }],
+        },
+      },
+    };
+
+    const data = await this.prisma.patients.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            gender: true,
+            photourl: true,
+          },
+        },
+      },
+    });
+
+    return {
+      data,
     };
   }
 

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -42,14 +43,14 @@ export class PrescriptionsController {
   //   );
   // }
 
-  @Get('me/medications')
-  @Roles(Role.PATIENT, Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR)
-  @ApiOperation({
-    summary: 'Get all medications for the logged-in patient',
-  })
-  findMyMedications(@Req() req: AuthenticatedRequest) {
-    return this.prescriptionsService.getMyMedications(req.user.sub);
-  }
+  // @Get('me/medications')
+  // @Roles(Role.PATIENT, Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR)
+  // @ApiOperation({
+  //   summary: 'Get all medications for the logged-in patient',
+  // })
+  // findMyMedications(@Req() req: AuthenticatedRequest) {
+  //   return this.prescriptionsService.getMyMedications(req.user.sub);
+  // }
 
   @Get('patient/:patientId')
   @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR, Role.PATIENT)
@@ -74,6 +75,22 @@ export class PrescriptionsController {
       req.user.sub,
       dto,
       activeFollowUpId,
+    );
+  }
+
+  @Delete(':id')
+  @Roles(Role.DOCTOR, Role.ADMIN, Role.SUPER_ADMIN)
+  @ApiOperation({
+    summary: 'Delete a prescription by its ID',
+  })
+  delete(
+    @Req() req: AuthenticatedRequest,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.prescriptionsService.deletePrescription(
+      id,
+      req.user.sub,
+      req.user.role,
     );
   }
 }

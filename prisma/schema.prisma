@@ -104,7 +104,6 @@ model FollowUp {
   id        Int    @id @default(autoincrement())
   doctorId  Int
   patientId Int
-  notes     String
 
   status  FollowUpStatus @default(PENDING)
   endDate DateTime?

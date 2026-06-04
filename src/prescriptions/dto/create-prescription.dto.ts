@@ -1,8 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsInt,
   IsNotEmpty,
-  IsOptional,
   IsString,
   MaxLength,
   Min,
@@ -28,24 +27,6 @@ export class CreatePrescriptionDto {
   medicationName: string;
 
   @ApiProperty({
-    description: 'Medication dosage',
-    example: '500mg',
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(100, { message: 'Dosage must not exceed 100 characters' })
-  dosage: string;
-
-  @ApiProperty({
-    description: 'How often the medication should be taken',
-    example: 'Twice daily',
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(200, { message: 'Frequency must not exceed 200 characters' })
-  frequency: string;
-
-  @ApiProperty({
     description: 'Treatment duration',
     example: '7 days',
   })
@@ -53,15 +34,4 @@ export class CreatePrescriptionDto {
   @IsNotEmpty()
   @MaxLength(100, { message: 'Duration must not exceed 100 characters' })
   duration: string;
-
-  @ApiPropertyOptional({
-    description: 'Additional instructions for the patient',
-    example: 'Take after meals',
-  })
-  @IsString()
-  @IsOptional()
-  @MaxLength(1000, {
-    message: 'Instructions must not exceed 1000 characters',
-  })
-  instructions?: string;
 }
