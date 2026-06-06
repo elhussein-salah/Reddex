@@ -70,6 +70,16 @@ export class FollowUpController {
     return this.followUpService.getPatientDoctors(req.user.sub);
   }
 
+  @ApiOperation({
+    summary:
+      'List all doctors with follow-up status for the logged-in patient',
+  })
+  @Roles(Role.PATIENT)
+  @Get('patient/doctors-status')
+  async getDoctorsWithFollowUpStatus(@Req() req: AuthenticatedRequest) {
+    return this.followUpService.getDoctorsWithFollowUpStatus(req.user.sub);
+  }
+
   @ApiOperation({ summary: 'Accept or Reject a follow-up request (Doctor)' })
   @Roles(Role.DOCTOR)
   @Patch(':id/respond')
@@ -83,11 +93,11 @@ export class FollowUpController {
 
   @ApiOperation({ summary: 'Cancel a PENDING follow-up request (Patient)' })
   @Roles(Role.PATIENT)
-  @Patch(':id/cancel')
+  @Patch('cancel/:doctorId')
   async cancelRequest(
     @Req() req: AuthenticatedRequest,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('doctorId', ParseIntPipe) doctorId: number,
   ) {
-    return this.followUpService.cancelRequest(req.user.sub, id);
+    return this.followUpService.cancelRequest(req.user.sub, doctorId);
   }
 }
