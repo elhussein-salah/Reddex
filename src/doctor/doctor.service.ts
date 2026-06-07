@@ -64,16 +64,21 @@ export class DoctorService {
   ) {}
 
   async findAll(filter: { search?: string }) {
-    const where: Prisma.doctorsWhereInput = {};
-    if (filter.search) {
-      where.user = {
+    const where: Prisma.doctorsWhereInput = {
+      user: {
         is: {
-          OR: [
-            { name: { contains: filter.search, mode: 'insensitive' } },
-            { email: { contains: filter.search, mode: 'insensitive' } },
-          ],
+          isActive: true,
         },
-      };
+      },
+    };
+
+    if (filter.search) {
+      // safely add OR to the existing 'is' condition
+      const isCondition = where.user!.is as Prisma.usersWhereInput;
+      isCondition.OR = [
+        { name: { contains: filter.search, mode: 'insensitive' } },
+        { email: { contains: filter.search, mode: 'insensitive' } },
+      ];
     }
 
     const data = await this.prisma.doctors.findMany({
