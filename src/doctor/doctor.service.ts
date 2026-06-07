@@ -62,9 +62,7 @@ export class DoctorService {
     private readonly cloudinary: CloudinaryService,
   ) {}
 
-  async findAll(filter: {
-    search?: string;
-  }) {
+  async findAll(filter: { search?: string }) {
     const where: Prisma.doctorsWhereInput = {};
     if (filter.search) {
       where.user = {
@@ -103,6 +101,7 @@ export class DoctorService {
         updatedAt: true,
         doctors: {
           select: {
+            id: true,
             specialty: true,
             licenseMedicalNumber: true,
             licenseMedicalPhotoUrl: true,

@@ -16,7 +16,6 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/role.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/enums';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { FilterDoctorDto } from './dto/filter.doctor.dto';
 
 @ApiTags('Doctors')
