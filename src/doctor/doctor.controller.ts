@@ -35,10 +35,10 @@ export class DoctorController {
   @Get('pendings')
   @Roles(Role.ADMIN)
   @ApiOperation({
-    summary: 'Get pending doctor accounts awaiting approval (paginated)',
+    summary: 'Get pending doctor accounts awaiting approval',
   })
-  findPendings(@Query() pagination: PaginationDto) {
-    return this.doctorService.findPendings(pagination);
+  findPendings() {
+    return this.doctorService.findPendings();
   }
   @Get(':id')
   @Roles(Role.ADMIN, Role.DOCTOR, Role.PATIENT)

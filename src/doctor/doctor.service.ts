@@ -86,60 +86,44 @@ export class DoctorService {
       data,
     };
   }
-  async findPendings(pagination: {
-    skip: number;
-    take: number;
-    sortBy: string;
-    sortOrder: 'asc' | 'desc';
-  }) {
-    const [data, total] = await Promise.all([
-      this.prisma.users.findMany({
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone: true,
-          photourl: true,
-          SSN: true,
-          gender: true,
-          birthdate: true,
-          role: true,
-          isActive: true,
-          createdAt: true,
-          updatedAt: true,
-          doctors: {
-            select: {
-              specialty: true,
-              licenseMedicalNumber: true,
-              licenseMedicalPhotoUrl: true,
-              yearsExperience: true,
-              idCardPhotoUrl: true,
-              nameOfClinic: true,
-              locationOfClinic: true,
-              photoOfClinicUrl: true,
-              workingHours: true,
-              workdays: true,
-              createdAt: true,
-              updatedAt: true,
-            },
+  async findPendings() {
+    const data = await this.prisma.users.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        photourl: true,
+        SSN: true,
+        gender: true,
+        birthdate: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+        doctors: {
+          select: {
+            specialty: true,
+            licenseMedicalNumber: true,
+            licenseMedicalPhotoUrl: true,
+            yearsExperience: true,
+            idCardPhotoUrl: true,
+            nameOfClinic: true,
+            locationOfClinic: true,
+            photoOfClinicUrl: true,
+            workingHours: true,
+            workdays: true,
+            createdAt: true,
+            updatedAt: true,
           },
         },
-        skip: pagination.skip,
-        take: pagination.take,
-        orderBy: { [pagination.sortBy]: pagination.sortOrder },
-        where: { isActive: false, role: 'DOCTOR' },
-      }),
-      this.prisma.users.count({ where: { isActive: false, role: 'DOCTOR' } }),
-    ]);
+      },
+      orderBy: { createdAt: 'desc' },
+      where: { isActive: false, role: 'DOCTOR' },
+    });
 
     return {
       data,
-      meta: {
-        total,
-        page: Math.floor(pagination.skip / pagination.take) + 1,
-        limit: pagination.take,
-        totalPages: Math.ceil(total / pagination.take),
-      },
     };
   }
   async findById(id: number): Promise<DoctorWithUser> {
