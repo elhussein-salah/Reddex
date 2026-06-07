@@ -56,8 +56,8 @@ export class PatientsController {
   }
   @Get()
   @ApiOperation({ summary: 'Get all patients' })
-  findAll(@Query() paginationDto: PaginationDto) {
-    return this.patientsService.getPatients(paginationDto);
+  findAll() {
+    return this.patientsService.getPatients();
   }
 
   @Get(':id')

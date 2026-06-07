@@ -112,30 +112,14 @@ export class PatientsService {
     }
   }
 
-  async getPatients(pagination: {
-    skip: number;
-    take: number;
-    sortBy: string;
-    sortOrder: 'asc' | 'desc';
-  }) {
-    const [data, total] = await Promise.all([
-      this.prisma.patients.findMany({
-        select: PATIENT_SELECT,
-        skip: pagination.skip,
-        take: pagination.take,
-        orderBy: { [pagination.sortBy]: pagination.sortOrder },
-      }),
-      this.prisma.patients.count(),
-    ]);
+  async getPatients() {
+    const data = await this.prisma.patients.findMany({
+      select: PATIENT_SELECT,
+      orderBy: { createdAt: 'desc' },
+    });
 
     return {
       data,
-      meta: {
-        total,
-        page: Math.floor(pagination.skip / pagination.take) + 1,
-        limit: pagination.take,
-        totalPages: Math.ceil(total / pagination.take),
-      },
     };
   }
 
