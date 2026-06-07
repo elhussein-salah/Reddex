@@ -17,6 +17,7 @@ import { RolesGuard } from 'src/auth/role.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/enums';
 import { FilterDoctorDto } from './dto/filter.doctor.dto';
+import { ManageDoctorStatusDto } from './dto';
 
 @ApiTags('Doctors')
 @ApiBearerAuth('JWT-auth')
@@ -44,6 +45,13 @@ export class DoctorController {
   @ApiOperation({ summary: 'Get doctor by ID' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.doctorService.findById(id);
+  }
+
+  @Patch('status')
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Approve or reject/delete a doctor account' })
+  manageStatus(@Body() dto: ManageDoctorStatusDto) {
+    return this.doctorService.manageStatus(dto);
   }
 
   @Patch(':id')

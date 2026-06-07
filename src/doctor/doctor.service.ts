@@ -15,6 +15,7 @@ import { UploadFolder } from 'src/enums';
 import { Prisma } from 'src/generated/prisma/client';
 import { normalizePhone } from 'src/common/utils/phone.util';
 import { ApiResponse } from 'src/common/interfaces/api.response';
+import { ManageDoctorStatusDto } from './dto';
 
 const DOCTOR_SELECT = {
   id: true,
@@ -351,6 +352,40 @@ export class DoctorService {
     } catch (error: unknown) {
       this.handleUniqueConstraintError(error);
       throw error;
+    }
+  }
+
+  async manageStatus(dto: ManageDoctorStatusDto): Promise<ApiResponse> {
+    const { userId, isActive } = dto;
+    const user = await this.prisma.users.findUnique({
+      where: { id: userId, role: 'DOCTOR' },
+      include: { doctors: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Doctor with User ID ${userId} not found`);
+    }
+
+    if (isActive) {
+      await this.prisma.users.update({
+        where: { id: userId },
+        data: { isActive: true },
+      });
+      return {
+        message: 'Doctor approved successfully.',
+        statusCode: 200,
+      };
+    } else {
+      if (user.doctors) {
+        await this.deleteDoctor(user.doctors.id);
+      } else {
+        await this.prisma.users.delete({ where: { id: userId } });
+      }
+
+      return {
+        message: 'Doctor deleted successfully.',
+        statusCode: 200,
+      };
     }
   }
 
