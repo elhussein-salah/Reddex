@@ -6,7 +6,6 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -19,7 +18,6 @@ import type { AuthenticatedRequest } from '../common/interfaces/AuthenticatedReq
 import { Role } from '../enums';
 import { CreatePrescriptionDto } from './dto';
 import { PrescriptionsService } from './prescriptions.service';
-import { PaginationDto } from '../common/dto/pagination.dto';
 
 @ApiTags('Prescriptions')
 @ApiBearerAuth('JWT-auth')
@@ -43,14 +41,14 @@ export class PrescriptionsController {
   //   );
   // }
 
-  // @Get('me/medications')
-  // @Roles(Role.PATIENT, Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR)
-  // @ApiOperation({
-  //   summary: 'Get all medications for the logged-in patient',
-  // })
-  // findMyMedications(@Req() req: AuthenticatedRequest) {
-  //   return this.prescriptionsService.getMyMedications(req.user.sub);
-  // }
+  @Get('me/medications')
+  @Roles(Role.PATIENT, Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR)
+  @ApiOperation({
+    summary: 'Get all medications for the logged-in patient',
+  })
+  findMyMedications(@Req() req: AuthenticatedRequest) {
+    return this.prescriptionsService.getMyMedications(req.user.sub);
+  }
 
   @Get('patient/:patientId')
   @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR, Role.PATIENT)

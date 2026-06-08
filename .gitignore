@@ -58,3 +58,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 /generated/prisma
 
 **.md
+Chapter_3_Methodology_and_System_Architecture.docx

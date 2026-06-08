@@ -16,6 +16,7 @@ import { CreateFollowUpDto, RespondFollowUpDto } from './dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../auth/role.guard';
 import { Roles } from '../auth/roles.decorator';
+import { FilterDoctorDto } from '../doctor/dto/filter.doctor.dto';
 import { Role } from '../enums/role';
 import type { AuthenticatedRequest } from '../common/interfaces/AuthenticatedRequest';
 import { PaginationDto } from '../common/dto/pagination.dto';
@@ -71,13 +72,18 @@ export class FollowUpController {
   }
 
   @ApiOperation({
-    summary:
-      'List all doctors with follow-up status for the logged-in patient',
+    summary: 'List all doctors with follow-up status for the logged-in patient',
   })
   @Roles(Role.PATIENT)
   @Get('patient/doctors-status')
-  async getDoctorsWithFollowUpStatus(@Req() req: AuthenticatedRequest) {
-    return this.followUpService.getDoctorsWithFollowUpStatus(req.user.sub);
+  async getDoctorsWithFollowUpStatus(
+    @Req() req: AuthenticatedRequest,
+    @Query() filter: FilterDoctorDto,
+  ) {
+    return this.followUpService.getDoctorsWithFollowUpStatus(
+      req.user.sub,
+      filter,
+    );
   }
 
   @ApiOperation({ summary: 'Accept or Reject a follow-up request (Doctor)' })

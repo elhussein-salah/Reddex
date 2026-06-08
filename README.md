@@ -1,98 +1,106 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Reddex API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Reddex is a comprehensive backend application designed for healthcare and medical platform management. Built with NestJS, it serves as a robust API to seamlessly manage patients, doctors, laboratories, prescriptions, and follow-ups. The project utilizes Prisma ORM with PostgreSQL for data persistence and integrates third-party services like Cloudinary for secure file management and SMTP for reliable email communication.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Technology Stack
 
-## Description
+- **Framework:** NestJS 11
+- **Language:** TypeScript
+- **ORM:** Prisma 7
+- **Database:** PostgreSQL
+- **Authentication:** Custom JWT Implementation
+- **Validation:** class-validator, class-transformer
+- **Storage:** Cloudinary (File Uploads)
+- **Email:** Nodemailer (@nestjs-modules/mailer)
+- **API Documentation:** Swagger
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Project Architecture
 
-## Project setup
+The codebase adheres to a modular architecture, keeping concerns separated and maintaining high scalability:
 
-```bash
-$ npm install
+- `src/user/`: Core identity and account management.
+- `src/patients/`: Patient profiles and health status management.
+- `src/doctor/`: Doctor profiles, clinics, and professional credentials.
+- `src/labs/`: Laboratory records management.
+- `src/follow-up/`: Doctor-patient follow-up request lifecycle (Pending, Accepted, Rejected, Cancelled).
+- `src/prescriptions/`: Medication and prescription management linked to active follow-ups.
+- `src/auth/`: General authentication, OTP management, and password resets.
+- `src/admin-auth/`: Admin-specific authentication logic.
+- `src/cloudinary/`: Cloudinary integration for centralized image/file uploads.
+- `src/mail/`: Email service implementation.
+- `src/prisma/`: Database connection and Prisma service instance.
+- `src/common/`: Shared resources, including filters, interceptors, middleware, and utilities.
+
+## Core Features and Data Model
+
+- **Identity Management:** A central `users` model acts as the root for all roles (Admin, Doctor, Patient). Patients and doctors are linked 1:1 to their respective user records.
+- **Authentication and Authorization:** Secured via JWT Bearer tokens and Role-Based Access Control (RBAC).
+- **Follow-up System:** Manages dynamic requests between doctors and patients.
+- **Prescription System:** Allows doctors to issue prescriptions for patients under active follow-ups.
+- **Global Error Handling:** Standardized error responses mapped from Prisma exceptions to HTTP statuses via a `GlobalExceptionFilter`.
+- **Response Formatting:** Consistent success responses wrapped via `TransformInterceptor`.
+
+## Prerequisites
+
+- Node.js (v18 or higher recommended)
+- PostgreSQL
+- Docker and Docker Compose (for local database setup)
+- Cloudinary Account
+- SMTP Configuration
+
+## Setup and Installation
+
+1. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Environment Configuration:**
+   Copy the example environment file and populate it with your credentials.
+   ```bash
+   cp .env.example .env
+   ```
+   *Key variables include `DATABASE_URL`, `JWT_SECRET`, `CLOUDINARY_*`, and `MAIL_*`.*
+
+3. **Database Setup:**
+   Launch the local PostgreSQL database instance using Docker Compose:
+   ```bash
+   docker compose up -d db
+   ```
+
+4. **Prisma Client and Migrations:**
+   Generate the Prisma client, apply migrations, and seed the database:
+   ```bash
+   npx prisma generate
+   npx prisma migrate dev
+   npm run seed
+   ```
+
+## Available Scripts
+
+- `npm run start:dev` - Run the API in development (watch) mode.
+- `npm run start:prod` - Run the API in production mode.
+- `npm run build` - Compile the project to the `dist` directory.
+- `npm run lint` - Run ESLint to identify and fix issues.
+- `npm run format` - Format the codebase using Prettier.
+- `npm run test` - Execute unit tests.
+- `npm run test:e2e` - Execute end-to-end tests.
+
+## API Documentation
+
+The API endpoints are fully documented using Swagger. Once the application is running, the documentation interface can be accessed at:
+
+```text
+http://localhost:<PORT>/api
 ```
 
-## Compile and run the project
+## Security Measures
 
-```bash
-# development
-$ npm run start
+- **Helmet:** Protects against common web vulnerabilities by setting appropriate HTTP headers.
+- **CORS:** Configured in `main.ts` to restrict unauthorized origin access.
+- **Rate Limiting:** Enforced via `ThrottlerGuard` to prevent abuse.
+- **Password Hashing:** Passwords and OTPs are securely hashed using `argon2` before persistence.
 
-# watch mode
-$ npm run start:dev
+## Deployment Workflows
 
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+The application is configured for continuous deployment via GitHub Actions. Pushes to the `main` branch trigger an automated workflow that runs tests, builds the application, and deploys it to an EC2 instance.

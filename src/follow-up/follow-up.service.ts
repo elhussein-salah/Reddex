@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateFollowUpDto } from './dto';
-import { FollowUpStatus } from '../generated/prisma/client';
+import { FollowUpStatus, Prisma } from '../generated/prisma/client';
 import { ProfileLookupService } from '../common/services/profile-lookup.service';
 
 @Injectable()
@@ -168,12 +168,31 @@ export class FollowUpService {
     };
   }
 
-  async getDoctorsWithFollowUpStatus(userId: number) {
+  async getDoctorsWithFollowUpStatus(
+    userId: number,
+    filter?: { search?: string },
+  ) {
     const patientId = await this.profileLookup.getPatientIdByUserId(userId);
+
+    const where: Prisma.doctorsWhereInput = {
+      user: {
+        is: {
+          isActive: true,
+        },
+      },
+    };
+
+    if (filter?.search) {
+      const isCondition = where.user!.is as Prisma.usersWhereInput;
+      isCondition.OR = [
+        { name: { contains: filter.search, mode: 'insensitive' } },
+        { email: { contains: filter.search, mode: 'insensitive' } },
+      ];
+    }
 
     // Fetch all active doctors with their user info
     const doctors = await this.prisma.doctors.findMany({
-      where: { user: { isActive: true } },
+      where,
       select: {
         id: true,
         specialty: true,
