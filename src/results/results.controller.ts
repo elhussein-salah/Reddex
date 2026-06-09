@@ -41,7 +41,7 @@ export class ResultsController {
 
   @Get()
   @Roles(Role.ADMIN, Role.PATIENT)
-  @ApiOperation({ summary: 'Get all results (admin) or my results (patient)' })
+  @ApiOperation({ summary: 'my results (patient)' })
   findAll(@Req() req: AuthenticatedRequest) {
     if (req.user.role === Role.PATIENT) {
       return this.resultsService.findMyResults(req.user.sub);

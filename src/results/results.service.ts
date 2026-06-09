@@ -66,8 +66,7 @@ export class ResultsService {
   }
 
   async findMyResults(userId: number) {
-    const patientId = await this.profileLookup.getPatientIdByUserId(userId);
-    return this.findByPatient(patientId);
+    return this.findByPatient(userId);
   }
 
   async findByPatient(userId: number) {
