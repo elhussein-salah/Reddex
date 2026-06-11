@@ -35,7 +35,7 @@ export class DoctorController {
   @Get('pendings')
   @Roles(Role.ADMIN)
   @ApiOperation({
-    summary: 'Get pending doctor accounts awaiting approval',
+    summary: 'Get pending doctor accounts awaiting approval (admin only)',
   })
   findPendings() {
     return this.doctorService.findPendings();
@@ -49,14 +49,16 @@ export class DoctorController {
 
   @Patch('status')
   @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Approve or reject/delete a doctor account' })
+  @ApiOperation({
+    summary: 'Approve or reject/delete a doctor account (admin only)',
+  })
   manageStatus(@Body() dto: ManageDoctorStatusDto) {
     return this.doctorService.manageStatus(dto);
   }
 
   @Patch(':id')
-  @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Update doctor by ID (admin only)' })
+  @Roles(Role.ADMIN, Role.DOCTOR)
+  @ApiOperation({ summary: 'Update doctor by ID' })
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateDoctorDto) {
     return this.doctorService.updateDoctor(id, dto);
   }

@@ -242,23 +242,42 @@ export class PrescriptionsService {
     }
 
     if (existing.doctorId !== doctorId) {
-      throw new ForbiddenException('You are not authorized to update this prescription');
+      throw new ForbiddenException(
+        'You are not authorized to update this prescription',
+      );
     }
 
     const updated = await this.prisma.$transaction(async (tx) => {
       const newPrescription = await tx.prescription.update({
         where: { id: prescriptionId },
         data: {
-          instructions: dto.instructions !== undefined ? dto.instructions : existing.instructions,
-          durationInDays: dto.durationInDays !== undefined ? dto.durationInDays : existing.durationInDays,
-          startDate: dto.startDate !== undefined ? new Date(dto.startDate) : existing.startDate,
-          medicationName: dto.medicationName !== undefined ? dto.medicationName : existing.medicationName,
+          instructions:
+            dto.instructions !== undefined
+              ? dto.instructions
+              : existing.instructions,
+          durationInDays:
+            dto.durationInDays !== undefined
+              ? dto.durationInDays
+              : existing.durationInDays,
+          startDate:
+            dto.startDate !== undefined
+              ? new Date(dto.startDate)
+              : existing.startDate,
+          medicationName:
+            dto.medicationName !== undefined
+              ? dto.medicationName
+              : existing.medicationName,
         },
       });
 
       let dosesScheduledCount = 0;
 
-      if (dto.durationInDays !== undefined || dto.startDate !== undefined || dto.timesPerDay !== undefined || dto.timezone !== undefined) {
+      if (
+        dto.durationInDays !== undefined ||
+        dto.startDate !== undefined ||
+        dto.timesPerDay !== undefined ||
+        dto.timezone !== undefined
+      ) {
         await tx.prescriptionDose.deleteMany({
           where: {
             prescriptionId,
@@ -267,7 +286,8 @@ export class PrescriptionsService {
         });
 
         if (dto.timesPerDay && dto.timesPerDay.length > 0) {
-          const startDateStr = dto.startDate || newPrescription.startDate.toISOString();
+          const startDateStr =
+            dto.startDate || newPrescription.startDate.toISOString();
           const dosesData = this.calculateDoses(
             newPrescription.id,
             startDateStr,
@@ -337,19 +357,24 @@ export class PrescriptionsService {
     timesPerDay: string[],
     tz?: string,
   ) {
-    const doses: { prescriptionId: number; exactTime: Date; status: string }[] = [];
+    const doses: { prescriptionId: number; exactTime: Date; status: string }[] =
+      [];
     const timezoneId = tz || 'UTC';
-    
+
     const baseDate = (dayjs as any).tz(startDateStr, timezoneId).startOf('day');
 
     for (let dayOffset = 0; dayOffset < durationInDays; dayOffset++) {
       const currentDay = baseDate.add(dayOffset, 'day');
-      
+
       for (const time of timesPerDay) {
         const [hours, minutes] = time.split(':').map(Number);
-        
-        const exactTime = currentDay.hour(hours).minute(minutes).second(0).toDate();
-        
+
+        const exactTime = currentDay
+          .hour(hours)
+          .minute(minutes)
+          .second(0)
+          .toDate();
+
         if (exactTime > new Date()) {
           doses.push({
             prescriptionId,
