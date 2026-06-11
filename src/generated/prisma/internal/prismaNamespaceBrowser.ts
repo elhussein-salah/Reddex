@@ -57,6 +57,8 @@ export const ModelName = {
   labs: 'labs',
   FollowUp: 'FollowUp',
   Prescription: 'Prescription',
+  PrescriptionDose: 'PrescriptionDose',
+  DeviceToken: 'DeviceToken',
   PasswordResetOtp: 'PasswordResetOtp',
   Result: 'Result'
 } as const
@@ -165,13 +167,38 @@ export const PrescriptionScalarFieldEnum = {
   doctorId: 'doctorId',
   patientId: 'patientId',
   medicationName: 'medicationName',
-  duration: 'duration',
-  issuedAt: 'issuedAt',
+  instructions: 'instructions',
+  durationInDays: 'durationInDays',
+  startDate: 'startDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type PrescriptionScalarFieldEnum = (typeof PrescriptionScalarFieldEnum)[keyof typeof PrescriptionScalarFieldEnum]
+
+
+export const PrescriptionDoseScalarFieldEnum = {
+  id: 'id',
+  prescriptionId: 'prescriptionId',
+  exactTime: 'exactTime',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrescriptionDoseScalarFieldEnum = (typeof PrescriptionDoseScalarFieldEnum)[keyof typeof PrescriptionDoseScalarFieldEnum]
+
+
+export const DeviceTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  deviceOs: 'deviceOs',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeviceTokenScalarFieldEnum = (typeof DeviceTokenScalarFieldEnum)[keyof typeof DeviceTokenScalarFieldEnum]
 
 
 export const PasswordResetOtpScalarFieldEnum = {

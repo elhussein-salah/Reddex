@@ -390,6 +390,8 @@ export const ModelName = {
   labs: 'labs',
   FollowUp: 'FollowUp',
   Prescription: 'Prescription',
+  PrescriptionDose: 'PrescriptionDose',
+  DeviceToken: 'DeviceToken',
   PasswordResetOtp: 'PasswordResetOtp',
   Result: 'Result'
 } as const
@@ -407,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "users" | "patients" | "doctors" | "labs" | "followUp" | "prescription" | "passwordResetOtp" | "result"
+    modelProps: "users" | "patients" | "doctors" | "labs" | "followUp" | "prescription" | "prescriptionDose" | "deviceToken" | "passwordResetOtp" | "result"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -855,6 +857,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PrescriptionDose: {
+      payload: Prisma.$PrescriptionDosePayload<ExtArgs>
+      fields: Prisma.PrescriptionDoseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrescriptionDoseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionDosePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrescriptionDoseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionDosePayload>
+        }
+        findFirst: {
+          args: Prisma.PrescriptionDoseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionDosePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrescriptionDoseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionDosePayload>
+        }
+        findMany: {
+          args: Prisma.PrescriptionDoseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionDosePayload>[]
+        }
+        create: {
+          args: Prisma.PrescriptionDoseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionDosePayload>
+        }
+        createMany: {
+          args: Prisma.PrescriptionDoseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrescriptionDoseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionDosePayload>[]
+        }
+        delete: {
+          args: Prisma.PrescriptionDoseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionDosePayload>
+        }
+        update: {
+          args: Prisma.PrescriptionDoseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionDosePayload>
+        }
+        deleteMany: {
+          args: Prisma.PrescriptionDoseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrescriptionDoseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrescriptionDoseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionDosePayload>[]
+        }
+        upsert: {
+          args: Prisma.PrescriptionDoseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrescriptionDosePayload>
+        }
+        aggregate: {
+          args: Prisma.PrescriptionDoseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrescriptionDose>
+        }
+        groupBy: {
+          args: Prisma.PrescriptionDoseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrescriptionDoseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrescriptionDoseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrescriptionDoseCountAggregateOutputType> | number
+        }
+      }
+    }
+    DeviceToken: {
+      payload: Prisma.$DeviceTokenPayload<ExtArgs>
+      fields: Prisma.DeviceTokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DeviceTokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceTokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DeviceTokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceTokenPayload>
+        }
+        findFirst: {
+          args: Prisma.DeviceTokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceTokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DeviceTokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceTokenPayload>
+        }
+        findMany: {
+          args: Prisma.DeviceTokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceTokenPayload>[]
+        }
+        create: {
+          args: Prisma.DeviceTokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceTokenPayload>
+        }
+        createMany: {
+          args: Prisma.DeviceTokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DeviceTokenCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceTokenPayload>[]
+        }
+        delete: {
+          args: Prisma.DeviceTokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceTokenPayload>
+        }
+        update: {
+          args: Prisma.DeviceTokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceTokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.DeviceTokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DeviceTokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DeviceTokenUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceTokenPayload>[]
+        }
+        upsert: {
+          args: Prisma.DeviceTokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeviceTokenPayload>
+        }
+        aggregate: {
+          args: Prisma.DeviceTokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDeviceToken>
+        }
+        groupBy: {
+          args: Prisma.DeviceTokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DeviceTokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DeviceTokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DeviceTokenCountAggregateOutputType> | number
+        }
+      }
+    }
     PasswordResetOtp: {
       payload: Prisma.$PasswordResetOtpPayload<ExtArgs>
       fields: Prisma.PasswordResetOtpFieldRefs
@@ -1130,13 +1280,38 @@ export const PrescriptionScalarFieldEnum = {
   doctorId: 'doctorId',
   patientId: 'patientId',
   medicationName: 'medicationName',
-  duration: 'duration',
-  issuedAt: 'issuedAt',
+  instructions: 'instructions',
+  durationInDays: 'durationInDays',
+  startDate: 'startDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type PrescriptionScalarFieldEnum = (typeof PrescriptionScalarFieldEnum)[keyof typeof PrescriptionScalarFieldEnum]
+
+
+export const PrescriptionDoseScalarFieldEnum = {
+  id: 'id',
+  prescriptionId: 'prescriptionId',
+  exactTime: 'exactTime',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrescriptionDoseScalarFieldEnum = (typeof PrescriptionDoseScalarFieldEnum)[keyof typeof PrescriptionDoseScalarFieldEnum]
+
+
+export const DeviceTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  deviceOs: 'deviceOs',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeviceTokenScalarFieldEnum = (typeof DeviceTokenScalarFieldEnum)[keyof typeof DeviceTokenScalarFieldEnum]
 
 
 export const PasswordResetOtpScalarFieldEnum = {
@@ -1442,6 +1617,8 @@ export type GlobalOmitConfig = {
   labs?: Prisma.labsOmit
   followUp?: Prisma.FollowUpOmit
   prescription?: Prisma.PrescriptionOmit
+  prescriptionDose?: Prisma.PrescriptionDoseOmit
+  deviceToken?: Prisma.DeviceTokenOmit
   passwordResetOtp?: Prisma.PasswordResetOtpOmit
   result?: Prisma.ResultOmit
 }

@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -16,7 +17,7 @@ import { Roles } from '../auth/roles.decorator';
 import { ActiveFollowUpGuard } from './guards/active-follow-up.guard';
 import type { AuthenticatedRequest } from '../common/interfaces/AuthenticatedRequest';
 import { Role } from '../enums';
-import { CreatePrescriptionDto } from './dto';
+import { CreatePrescriptionDto, UpdatePrescriptionDto } from './dto';
 import { PrescriptionsService } from './prescriptions.service';
 
 @ApiTags('Prescriptions')
@@ -53,7 +54,7 @@ export class PrescriptionsController {
   @Get('patient/:patientId')
   @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR, Role.PATIENT)
   @ApiOperation({
-    summary: 'Get all prescriptions for a patient by patient ID (paginated)',
+    summary: 'Get all prescriptions for a patient by patient ID',
   })
   findByPatientId(@Param('patientId', ParseIntPipe) patientId: number) {
     return this.prescriptionsService.getPatientPrescriptions(patientId);
@@ -74,6 +75,19 @@ export class PrescriptionsController {
       dto,
       activeFollowUpId,
     );
+  }
+
+  @Put(':id')
+  @Roles(Role.DOCTOR)
+  @ApiOperation({
+    summary: 'Update a prescription and reschedule its reminders',
+  })
+  update(
+    @Req() req: AuthenticatedRequest,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdatePrescriptionDto,
+  ) {
+    return this.prescriptionsService.updatePrescription(req.user.sub, id, dto);
   }
 
   @Delete(':id')

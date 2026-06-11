@@ -33,21 +33,22 @@ enum Gender {
 }
 
 model users {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  password  String
-  photourl  String?
-  name      String
-  gender    Gender
-  phone     String    @unique
-  SSN       String    @unique
-  birthdate DateTime  @db.Date
-  role      Role
-  isActive  Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  patients  patients?
-  doctors   doctors?
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  photourl     String?
+  name         String
+  gender       Gender
+  phone        String        @unique
+  SSN          String        @unique
+  birthdate    DateTime      @db.Date
+  role         Role
+  isActive     Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  patients     patients?
+  doctors      doctors?
+  deviceTokens DeviceToken[]
 }
 
 model patients {
@@ -101,7 +102,7 @@ model labs {
 }
 
 model FollowUp {
-  id        Int    @id @default(autoincrement())
+  id        Int @id @default(autoincrement())
   doctorId  Int
   patientId Int
 
@@ -126,17 +127,45 @@ model Prescription {
   doctorId       Int
   patientId      Int
   medicationName String
-  duration       String
-  issuedAt       DateTime @default(now())
+  instructions   String?
+  durationInDays Int
+  startDate      DateTime @db.Date
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  followUp FollowUp @relation(fields: [followUpId], references: [id], onDelete: Cascade)
-  doctor   doctors  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  patient  patients @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  followUp FollowUp           @relation(fields: [followUpId], references: [id], onDelete: Cascade)
+  doctor   doctors            @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient  patients           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doses    PrescriptionDose[]
 
   @@index([doctorId, patientId])
-  @@index([patientId, issuedAt])
+  @@index([patientId, startDate])
+}
+
+model PrescriptionDose {
+  id             Int      @id @default(autoincrement())
+  prescriptionId Int
+  exactTime      DateTime
+  status         String   @default("PENDING") // PENDING, SENT, CANCELLED
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+
+  @@index([exactTime, status])
+}
+
+model DeviceToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  deviceOs  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model PasswordResetOtp {

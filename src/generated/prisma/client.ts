@@ -70,6 +70,16 @@ export type FollowUp = Prisma.FollowUpModel
  */
 export type Prescription = Prisma.PrescriptionModel
 /**
+ * Model PrescriptionDose
+ * 
+ */
+export type PrescriptionDose = Prisma.PrescriptionDoseModel
+/**
+ * Model DeviceToken
+ * 
+ */
+export type DeviceToken = Prisma.DeviceTokenModel
+/**
  * Model PasswordResetOtp
  * 
  */

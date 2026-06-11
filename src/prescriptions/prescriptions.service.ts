@@ -7,8 +7,14 @@ import { FollowUpStatus, Prisma } from '../generated/prisma/client';
 import { Role } from '../enums';
 import type { ApiResponse } from '../common/interfaces/api.response';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreatePrescriptionDto } from './dto';
+import { CreatePrescriptionDto, UpdatePrescriptionDto } from './dto';
 import { ProfileLookupService } from '../common/services/profile-lookup.service';
+import * as dayjs from 'dayjs';
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const PRESCRIPTION_SELECT = {
   id: true,
@@ -16,7 +22,9 @@ const PRESCRIPTION_SELECT = {
   doctorId: true,
   patientId: true,
   medicationName: true,
-  duration: true,
+  instructions: true,
+  durationInDays: true,
+  startDate: true,
   patient: {
     select: {
       treatments: true,
@@ -27,8 +35,10 @@ const PRESCRIPTION_SELECT = {
 const MEDICATION_OVERVIEW_SELECT = {
   id: true,
   medicationName: true,
-  duration: true,
-  issuedAt: true,
+  instructions: true,
+  durationInDays: true,
+  startDate: true,
+  createdAt: true,
   doctor: {
     select: {
       id: true,
@@ -103,7 +113,7 @@ export class PrescriptionsService {
       this.prisma.prescription.findMany({
         where: { patientId },
         select: MEDICATION_OVERVIEW_SELECT,
-        orderBy: { issuedAt: 'desc' },
+        orderBy: { createdAt: 'desc' },
       }),
     ]);
 
@@ -142,8 +152,6 @@ export class PrescriptionsService {
     const doctorId = await this.profileLookup.getDoctorIdByUserId(userId);
     await this.ensurePatientExists(dto.patientId);
 
-    // Reuse the follow-up ID from the guard if available;
-    // otherwise fall back to querying (defensive, for non-guard callers).
     let followUpId = activeFollowUpId;
 
     if (!followUpId) {
@@ -166,18 +174,45 @@ export class PrescriptionsService {
       followUpId = followUp.id;
     }
 
-    const prescription = await this.prisma.prescription.create({
-      data: {
-        followUpId,
-        doctorId,
-        patientId: dto.patientId,
-        medicationName: dto.medicationName,
-        duration: dto.duration,
-      },
-      select: PRESCRIPTION_SELECT,
+    const prescription = await this.prisma.$transaction(async (tx) => {
+      const createdPrescription = await tx.prescription.create({
+        data: {
+          followUpId,
+          doctorId,
+          patientId: dto.patientId,
+          medicationName: dto.medicationName,
+          instructions: dto.instructions,
+          durationInDays: dto.durationInDays,
+          startDate: new Date(dto.startDate),
+        },
+        select: PRESCRIPTION_SELECT,
+      });
+
+      const dosesData = this.calculateDoses(
+        createdPrescription.id,
+        dto.startDate,
+        dto.durationInDays,
+        dto.timesPerDay,
+        dto.timezone,
+      );
+
+      if (dosesData.length > 0) {
+        await tx.prescriptionDose.createMany({
+          data: dosesData,
+        });
+      }
+
+      return {
+        ...createdPrescription,
+        dosesScheduledCount: dosesData.length,
+      };
     });
 
-    return this.toCreateResponse(prescription);
+    return {
+      message: 'Prescription created and reminders scheduled successfully',
+      statusCode: 201,
+      data: prescription,
+    };
   }
 
   private async ensurePatientExists(patientId: number): Promise<void> {
@@ -189,6 +224,78 @@ export class PrescriptionsService {
     if (!patient) {
       throw new NotFoundException(`Patient with ID ${patientId} not found`);
     }
+  }
+
+  async updatePrescription(
+    userId: number,
+    prescriptionId: number,
+    dto: UpdatePrescriptionDto,
+  ): Promise<ApiResponse> {
+    const doctorId = await this.profileLookup.getDoctorIdByUserId(userId);
+
+    const existing = await this.prisma.prescription.findUnique({
+      where: { id: prescriptionId },
+    });
+
+    if (!existing) {
+      throw new NotFoundException('Prescription not found');
+    }
+
+    if (existing.doctorId !== doctorId) {
+      throw new ForbiddenException('You are not authorized to update this prescription');
+    }
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const newPrescription = await tx.prescription.update({
+        where: { id: prescriptionId },
+        data: {
+          instructions: dto.instructions !== undefined ? dto.instructions : existing.instructions,
+          durationInDays: dto.durationInDays !== undefined ? dto.durationInDays : existing.durationInDays,
+          startDate: dto.startDate !== undefined ? new Date(dto.startDate) : existing.startDate,
+          medicationName: dto.medicationName !== undefined ? dto.medicationName : existing.medicationName,
+        },
+      });
+
+      let dosesScheduledCount = 0;
+
+      if (dto.durationInDays !== undefined || dto.startDate !== undefined || dto.timesPerDay !== undefined || dto.timezone !== undefined) {
+        await tx.prescriptionDose.deleteMany({
+          where: {
+            prescriptionId,
+            status: 'PENDING',
+          },
+        });
+
+        if (dto.timesPerDay && dto.timesPerDay.length > 0) {
+          const startDateStr = dto.startDate || newPrescription.startDate.toISOString();
+          const dosesData = this.calculateDoses(
+            newPrescription.id,
+            startDateStr,
+            newPrescription.durationInDays,
+            dto.timesPerDay,
+            dto.timezone,
+          );
+
+          if (dosesData.length > 0) {
+            await tx.prescriptionDose.createMany({
+              data: dosesData,
+            });
+            dosesScheduledCount = dosesData.length;
+          }
+        }
+      }
+
+      return {
+        prescriptionId: newPrescription.id,
+        dosesRescheduledCount: dosesScheduledCount,
+      };
+    });
+
+    return {
+      message: 'Prescription updated and future reminders rescheduled',
+      statusCode: 200,
+      data: updated,
+    };
   }
 
   async deletePrescription(
@@ -218,16 +325,41 @@ export class PrescriptionsService {
     });
 
     return {
-      message: 'Prescription deleted successfully',
+      message: 'Prescription deleted and reminders cancelled successfully',
       statusCode: 200,
     };
   }
 
-  private toCreateResponse(data: PrescriptionRecord): ApiResponse {
-    return {
-      message: 'Prescription created successfully',
-      statusCode: 201,
-      data,
-    };
+  private calculateDoses(
+    prescriptionId: number,
+    startDateStr: string,
+    durationInDays: number,
+    timesPerDay: string[],
+    tz?: string,
+  ) {
+    const doses: { prescriptionId: number; exactTime: Date; status: string }[] = [];
+    const timezoneId = tz || 'UTC';
+    
+    const baseDate = (dayjs as any).tz(startDateStr, timezoneId).startOf('day');
+
+    for (let dayOffset = 0; dayOffset < durationInDays; dayOffset++) {
+      const currentDay = baseDate.add(dayOffset, 'day');
+      
+      for (const time of timesPerDay) {
+        const [hours, minutes] = time.split(':').map(Number);
+        
+        const exactTime = currentDay.hour(hours).minute(minutes).second(0).toDate();
+        
+        if (exactTime > new Date()) {
+          doses.push({
+            prescriptionId,
+            exactTime,
+            status: 'PENDING',
+          });
+        }
+      }
+    }
+
+    return doses;
   }
 }

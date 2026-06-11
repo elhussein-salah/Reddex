@@ -20,6 +20,7 @@ import { validateEnv } from './common/config/env.validation';
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { LabsModule } from './labs/labs.module';
 import { ResultsModule } from './results/results.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ResultsModule } from './results/results.module';
     PrescriptionsModule,
     LabsModule,
     ResultsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [
