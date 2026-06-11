@@ -53,7 +53,8 @@ jobs:
             npx prisma migrate deploy || true
 
             echo "♻️ Restart application"
-            pm2 reload reddex || pm2 start dist/src/main.js --name reddex
+            pm2 delete reddex 2>/dev/null || true
+            pm2 start ecosystem.config.js
 
             echo "💾 Save PM2 process"
             pm2 save
