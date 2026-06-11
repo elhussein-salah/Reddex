@@ -1,4 +1,13 @@
-import { Controller, Post, Delete, Body, Req, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Delete,
+  Body,
+  Req,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
 import { DeviceTokenDto, DeleteDeviceTokenDto } from './dto/device-token.dto';
@@ -29,7 +38,10 @@ export class NotificationsController {
     @Req() req: AuthenticatedRequest,
     @Body() dto: DeleteDeviceTokenDto,
   ) {
-    await this.notificationsService.removeDeviceToken(req.user.sub, dto.fcmToken);
+    await this.notificationsService.removeDeviceToken(
+      req.user.sub,
+      dto.fcmToken,
+    );
     return { status: 'success', message: 'Device token removed successfully.' };
   }
 }
