@@ -113,23 +113,27 @@ export class FollowUpService {
       },
     };
 
-    const data = await this.prisma.patients.findMany({
-      where,
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true,
-            gender: true,
-            photourl: true,
+    const [data, total] = await Promise.all([
+      this.prisma.patients.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true,
+              gender: true,
+              photourl: true,
+            },
           },
         },
-      },
-    });
+      }),
+      this.prisma.patients.count({ where }),
+    ]);
 
     return {
+      total,
       data,
     };
   }
