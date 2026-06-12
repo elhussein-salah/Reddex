@@ -9,9 +9,9 @@ import type { ApiResponse } from '../common/interfaces/api.response';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePrescriptionDto, UpdatePrescriptionDto } from './dto';
 import { ProfileLookupService } from '../common/services/profile-lookup.service';
-import * as dayjs from 'dayjs';
-const utc = require('dayjs/plugin/utc');
-const timezone = require('dayjs/plugin/timezone');
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -361,7 +361,7 @@ export class PrescriptionsService {
       [];
     const timezoneId = tz || 'UTC';
 
-    const baseDate = (dayjs as any).tz(startDateStr, timezoneId).startOf('day');
+    const baseDate = dayjs.tz(startDateStr, timezoneId).startOf('day');
 
     for (let dayOffset = 0; dayOffset < durationInDays; dayOffset++) {
       const currentDay = baseDate.add(dayOffset, 'day');
