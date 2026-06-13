@@ -30,10 +30,18 @@ export class NotificationsCronService {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
-    this.logger.debug('Checking for pending prescription doses...');
-
     const now = new Date();
 
+    // ── Cron Start ────────────────────────────────────────────────────────────
+    this.logger.debug(
+      [
+        'Cron execution started',
+        `UTC:   ${now.toISOString()}`,
+        `Local: ${now.toString()}`,
+      ].join('\n'),
+    );
+
+    // ── Database Query ────────────────────────────────────────────────────────
     // 1. Single query with eager-loaded relations (eliminates N+1)
     const pendingDoses = await this.prisma.prescriptionDose.findMany({
       where: {
@@ -60,9 +68,16 @@ export class NotificationsCronService {
       take: 100,
     });
 
+    this.logger.debug(
+      `Found ${pendingDoses.length} pending dose(s) to process`,
+    );
+
     if (pendingDoses.length === 0) return;
 
-    this.logger.debug(`Found ${pendingDoses.length} pending doses to process.`);
+    // ── Summary Counters ──────────────────────────────────────────────────────
+    let notificationsAttempted = 0;
+    let notificationsSucceeded = 0;
+    let notificationsFailed = 0;
 
     // 2. Batch-mark all fetched doses as SENT immediately (prevents race conditions)
     const doseIds = pendingDoses.map((dose) => dose.id);
@@ -75,18 +90,41 @@ export class NotificationsCronService {
     const staleTokens = new Set<string>();
 
     for (const dose of pendingDoses) {
+      // ── Per-Dose Start ──────────────────────────────────────────────────────
+      this.logger.debug(
+        [
+          `Processing dose ${dose.id}`,
+          `Prescription: ${dose.prescription.medicationName}`,
+          `ExactTime: ${dose.exactTime.toISOString()}`,
+          `Status: PENDING`,
+        ].join('\n'),
+      );
+
       try {
         const deviceTokens = dose.prescription.patient?.user?.deviceTokens;
 
+        // ── Device Tokens ─────────────────────────────────────────────────────
         if (
           !deviceTokens ||
           deviceTokens.length === 0 ||
           getApps().length === 0
         ) {
+          this.logger.debug(`Skipping dose ${dose.id}: no device tokens found`);
           continue;
         }
 
+        this.logger.debug(`Found ${deviceTokens.length} device token(s)`);
+
         const tokens = deviceTokens.map((dt) => dt.token);
+
+        // ── Before Firebase Send ──────────────────────────────────────────────
+        notificationsAttempted++;
+        this.logger.debug(
+          [
+            `Sending notification for dose ${dose.id}`,
+            `Tokens count: ${tokens.length}`,
+          ].join('\n'),
+        );
 
         const message = {
           notification: {
@@ -98,7 +136,23 @@ export class NotificationsCronService {
 
         const response = await getMessaging().sendEachForMulticast(message);
 
-        if (response.failureCount > 0) {
+        // ── After Firebase Response ───────────────────────────────────────────
+        const successCount = response.successCount;
+        const failureCount = response.failureCount;
+
+        notificationsSucceeded += successCount;
+        notificationsFailed += failureCount;
+
+        this.logger.debug(
+          [
+            `Dose ${dose.id} notification sent`,
+            `Success: ${successCount}`,
+            `Failed:  ${failureCount}`,
+          ].join('\n'),
+        );
+
+        // ── Failed Token Cleanup ──────────────────────────────────────────────
+        if (failureCount > 0) {
           response.responses.forEach((res, idx) => {
             if (!res.success) {
               const errorCodesToDelete = [
@@ -109,26 +163,57 @@ export class NotificationsCronService {
                 res.error?.code &&
                 errorCodesToDelete.includes(res.error.code)
               ) {
+                this.logger.warn(`Invalid token detected: ${tokens[idx]}`);
                 staleTokens.add(tokens[idx]);
               }
             }
           });
         }
       } catch (error) {
-        this.logger.error(`Failed to process dose ${dose.id}`, error);
+        // ── Per-Dose Error ────────────────────────────────────────────────────
+        const err = error instanceof Error ? error : new Error(String(error));
+        this.logger.error(
+          [
+            `Failed to process dose ${dose.id}`,
+            `Error message: ${err.message}`,
+            `Stack: ${err.stack ?? 'unavailable'}`,
+          ].join('\n'),
+        );
       }
     }
 
     // 4. Single batch delete for all stale tokens (replaces fire-and-forget deletes)
+    let staleTokensRemoved = 0;
+
     if (staleTokens.size > 0) {
       try {
         const { count } = await this.prisma.deviceToken.deleteMany({
           where: { token: { in: [...staleTokens] } },
         });
-        this.logger.log(`🗑️ Cleaned up ${count} stale device token(s).`);
+        staleTokensRemoved = count;
+        this.logger.log(`Deleted ${count} stale device token(s)`);
       } catch (error) {
-        this.logger.error('Failed to delete stale device tokens', error);
+        const err = error instanceof Error ? error : new Error(String(error));
+        this.logger.error(
+          [
+            'Failed to delete stale device tokens',
+            `Error message: ${err.message}`,
+            `Stack: ${err.stack ?? 'unavailable'}`,
+          ].join('\n'),
+        );
       }
     }
+
+    // ── Cron Summary ──────────────────────────────────────────────────────────
+    this.logger.log(
+      [
+        'Cron completed',
+        `Pending doses processed:   ${pendingDoses.length}`,
+        `Notifications attempted:   ${notificationsAttempted}`,
+        `Notifications succeeded:   ${notificationsSucceeded}`,
+        `Notifications failed:      ${notificationsFailed}`,
+        `Stale tokens removed:      ${staleTokensRemoved}`,
+      ].join('\n'),
+    );
   }
 }
