@@ -10,6 +10,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateFollowUpDto } from './dto';
 import { FollowUpStatus, Prisma } from '../generated/prisma/client';
 import { ProfileLookupService } from '../common/services/profile-lookup.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class FollowUpService {
@@ -18,6 +19,7 @@ export class FollowUpService {
   constructor(
     private prisma: PrismaService,
     private readonly profileLookup: ProfileLookupService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async createRequest(userId: number, dto: CreateFollowUpDto) {
@@ -53,6 +55,14 @@ export class FollowUpService {
       },
     });
     this.logger.log(`Follow-up created – id: ${followUp.id}`);
+
+    // Fire-and-forget: notify the doctor about the new follow-up request
+    this.notifyDoctorOfNewFollowUp(dto.doctorId, patientId).catch((err) => {
+      this.logger.error(
+        `Unexpected error in follow-up notification for followUpId ${followUp.id}: ${err.message}`,
+      );
+    });
+
     return followUp;
   }
 
@@ -345,5 +355,61 @@ export class FollowUpService {
     });
     this.logger.log(`Follow-up ${followUp.id} cancelled`);
     return updated;
+  }
+
+  /**
+   * Fetches the doctor's userId and patient name, then sends a push notification.
+   * Handles all edge cases (inactive doctor, missing name, no tokens) gracefully.
+   */
+  private async notifyDoctorOfNewFollowUp(
+    doctorId: number,
+    patientId: number,
+  ): Promise<void> {
+    const doctor = await this.prisma.doctors.findUnique({
+      where: { id: doctorId },
+      select: {
+        userId: true,
+        user: { select: { isActive: true } },
+      },
+    });
+
+    if (!doctor) {
+      this.logger.warn(
+        `Cannot notify doctor: doctorId ${doctorId} not found`,
+      );
+      return;
+    }
+
+    if (!doctor.user.isActive) {
+      this.logger.debug(
+        `Skipping notification: doctor userId ${doctor.userId} is inactive`,
+      );
+      return;
+    }
+
+    const patient = await this.prisma.patients.findUnique({
+      where: { id: patientId },
+      select: {
+        user: { select: { name: true } },
+      },
+    });
+
+    const patientName = patient?.user?.name || 'مريض';
+
+    const sent = await this.notifications.sendPushNotification(
+      doctor.userId,
+      'متابعة جديدة',
+      `المريض ${patientName} أرسل لك متابعة`,
+    );
+
+    if (sent) {
+      this.logger.log(
+        `Follow-up notification sent to doctor userId ${doctor.userId}`,
+      );
+    } else {
+      this.logger.warn(
+        `Follow-up notification not delivered to doctor userId ${doctor.userId}`,
+      );
+    }
   }
 }
